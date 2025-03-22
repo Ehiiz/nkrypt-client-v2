@@ -4,15 +4,15 @@ import { IComment } from "./krypt.interface";
 
 export const useCommentsForKrypts = ({ id }: { id: string }) => {
   const { data, error, isValidating, mutate } = useSWR(
-    `/krypt/${id}`,
+    `/krypt/${id}/comments`,
     fetchUser
   );
 
   const kryptLoading = !data && !error;
-  const comments: IComment[] | undefined = data;
+  const commentData: { comments: IComment[] } | undefined = data;
 
   return {
-    comments,
+    comments: commentData?.comments,
     error,
     kryptLoading,
     isValidating,

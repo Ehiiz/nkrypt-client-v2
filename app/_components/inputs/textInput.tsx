@@ -44,8 +44,8 @@ export default function TextInput<T extends FieldValues>({
     name?.toLowerCase() === "confirmpassword";
 
   const baseInputClasses =
-    "w-full text-black rounded-[25px] placeholder:text-baseGreen-two mt-[3px] outline-none border border-baseGreen-two";
-  const inputClasses = `bg-baseGreen-four ${baseInputClasses} h-[52px] px-[20px] ${
+    "w-full text-white  placeholder:text-white/[80%] mt-[3px] outline-none";
+  const inputClasses = `text-white ${baseInputClasses} h-[52px] px-[20px] ${
     readonly ? "cursor-not-allowed opacity-70" : ""
   }`;
   const textareaClasses = `py-4 ${baseInputClasses} ${
@@ -54,15 +54,8 @@ export default function TextInput<T extends FieldValues>({
 
   return (
     <div className="w-full flex flex-col">
-      <label
-        htmlFor={name}
-        className="text-baseBrown-four text-[14px] font-[400]"
-      >
-        {label}
-      </label>
-
       {textField ? (
-        <div className="flex items-center gap-[10px]">
+        <div className="flex items-center border-b-2 border-[#C4C4C4] gap-[10px]">
           <textarea
             id={name}
             {...register(name, {
@@ -76,7 +69,7 @@ export default function TextInput<T extends FieldValues>({
           />
         </div>
       ) : (
-        <div className="relative w-full">
+        <div className="relative w-full border-b-2 border-[#C4C4C4]">
           <input
             type={isPasswordField && !showPassword ? "password" : "text"}
             id={name}
@@ -91,7 +84,7 @@ export default function TextInput<T extends FieldValues>({
           {isPasswordField && (
             <button
               type="button"
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-baseGreen-two hover:text-baseGreen-dark focus:outline-none"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-baseGreen-dark focus:outline-none"
               onClick={() => setShowPassword((prev) => !prev)}
             >
               {showPassword ? "Hide" : "Show"}
@@ -99,6 +92,12 @@ export default function TextInput<T extends FieldValues>({
           )}
         </div>
       )}
+      <label
+        htmlFor={name}
+        className="text-baseBrown-four mt-[5px] text-[14px] font-[400]"
+      >
+        {label}
+      </label>
       {error && (
         <p className="text-red-500 text-[12px] mt-[5px]">{error.message}</p>
       )}

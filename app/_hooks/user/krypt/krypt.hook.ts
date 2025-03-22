@@ -8,6 +8,7 @@ import {
   IRequestComment,
   IRequestCreateKrypt,
   IRequestPublishKrypt,
+  IRequestUnlockKrypt,
   IResponseCreateKrypt,
   IResponseUnlockKrypt,
 } from "./krypt.interface";
@@ -40,7 +41,7 @@ export class UserKryptService {
   };
 
   static unlockKrypt = async (
-    body: IResponseCreateKrypt & { id: string }
+    body: IRequestUnlockKrypt & { id: string }
   ): Promise<IApiResponse<IResponseUnlockKrypt | null>> => {
     try {
       const { id, ...request } = body;

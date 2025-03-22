@@ -7,7 +7,7 @@ export interface IUser {
   updatedAt?: string;
   profileImage: string;
   bio: string;
-  followerCount: number;
+  followersCount: number;
   followingCount: number;
   completedSetup: boolean;
 }
@@ -42,7 +42,7 @@ export interface IResponseAuthSignup {
 
 export interface IResponseAuthLogin {
   token: string;
-  student: IStudent;
+  user: IStudent;
   completedSetup?: boolean | null;
 }
 

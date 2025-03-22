@@ -2,11 +2,15 @@ import useSWR from "swr";
 import { fetchUser } from "../../fetcher";
 import { IKryptsReponse } from "./krypt.interface";
 
-export const useUserKrypts = ({ draft = false }: { draft: boolean }) => {
-  const { data, error, isValidating, mutate } = useSWR(
-    `/krypt/user?draft=${draft}`,
-    fetchUser
-  );
+export const useUserKrypts = ({
+  draft = false,
+  dekrypt = false,
+}: {
+  draft?: boolean;
+  dekrypt?: boolean;
+}) => {
+  const url = dekrypt ? "/krypt/user/dekrypts" : `/krypt/user?draft=${draft}`;
+  const { data, error, isValidating, mutate } = useSWR(url, fetchUser);
 
   const kryptLoading = !data && !error;
 

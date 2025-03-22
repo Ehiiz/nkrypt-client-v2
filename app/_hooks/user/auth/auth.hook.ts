@@ -18,7 +18,7 @@ import axios from "axios";
 import { axiosClient } from "../../axios";
 import { UserTokenStorage } from "@/app/_utils/localStorage/userStorage";
 
-export class StudentAuthHook {
+export class UserAuthHook {
   private static getToken = () => {
     return UserTokenStorage.getUserToken();
   };
@@ -183,6 +183,33 @@ export class StudentAuthHook {
           error.response?.data?.message ||
           error.message ||
           "Failed to change password";
+
+        return {
+          success: false,
+          status: "error",
+          message: errorMessage,
+          data: null,
+        };
+      }
+      return error;
+    }
+  };
+
+  static checkUserName = async (body: {
+    username: string;
+  }): Promise<IApiResponse<{ available: boolean } | null>> => {
+    try {
+      const res = await axiosClient.get(
+        `/auth/check-username?username=${body.username}`
+      );
+
+      return res.data;
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to check user name";
 
         return {
           success: false,

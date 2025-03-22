@@ -8,13 +8,13 @@ export enum KryptTypeEnum {
 export interface IRequestCreateKrypt {
   title: string;
   description: string;
-  content: string[];
+  content: { type: string; content: string }[];
   type: KryptTypeEnum;
   draft: boolean;
   questions: {
     question: string;
-    answers: string;
-    options: string;
+    answer: string;
+    options?: string[];
     index: number;
   }[];
 }
@@ -71,7 +71,7 @@ export interface IResponseFormattedUnlockedKrypt {
   id: string;
   title: string;
   description: string;
-  content: string[];
+  content: { type: "image" | "text" | "sound"; content: string }[];
   successCount: number;
   failureCount: number;
   commentCount: number;
@@ -88,6 +88,7 @@ export interface IComment {
   commenterId: string;
   commenterName: string;
   commenterImage: string;
+  comment: string;
 }
 
 export interface IRequestComment {
@@ -100,4 +101,16 @@ export interface IRequestPublishKrypt {
 
 export interface IRequestUnlockKrypt {
   answers: string[];
+}
+
+export interface IResponseKryptQuestion {
+  questions: IQuestion[];
+  type: KryptTypeEnum;
+}
+export interface IQuestion {
+  question?: string;
+  answer: string;
+  index: number;
+  options?: string[];
+  _id: string;
 }

@@ -9,10 +9,13 @@ export const useUnlockedKrypts = ({ id }: { id: string }) => {
   );
 
   const kryptLoading = !data && !error;
-  const krypt: IResponseFormattedUnlockedKrypt | undefined = data;
+  const kryptData:
+    | { krypt: IResponseFormattedUnlockedKrypt; allowed: boolean }
+    | undefined = data;
 
   return {
-    krypt,
+    krypt: kryptData?.krypt,
+    allowed: kryptData?.allowed,
     error,
     kryptLoading,
     isValidating,
