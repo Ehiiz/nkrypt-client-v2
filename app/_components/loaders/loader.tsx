@@ -1,5 +1,4 @@
-import Modal from "../mainModal";
-
+import Modal from "../../_components/mainModal";
 export default function Loader() {
   return (
     <Modal>

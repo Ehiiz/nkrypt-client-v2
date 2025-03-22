@@ -24,6 +24,10 @@ export default function DashboardLayout({
 
   const isActive = (path: string) => pathname === path;
 
+  // Only show Create Krypt button on dashboard home and explore pages
+  const shouldShowCreateButton =
+    pathname === "/dashboard" || pathname === "/dashboard/explore";
+
   return (
     <div className="flex min-h-screen bg-[#2E3238] font-aeonik">
       {/* Sidebar for large screens */}
@@ -63,14 +67,16 @@ export default function DashboardLayout({
         <main className="flex-1 overflow-y-auto pb-16 lg:pb-0">{children}</main>
       </div>
 
-      {/* Floating Create Krypt Button */}
-      <Link
-        href="/dashboard/krypt/create"
-        className="fixed bottom-[80px] cursor-pointer right-4 lg:bottom-8 lg:right-8 bg-[#B2F17E] text-[#222227] rounded-full px-4 py-3 shadow-lg flex items-center z-20 hover:bg-opacity-90 transition-all"
-      >
-        <FiPlus className="h-5 w-5 mr-2" />
-        <span className="font-medium">Create Krypt</span>
-      </Link>
+      {/* Floating Create Krypt Button - only shown on specific pages */}
+      {shouldShowCreateButton && (
+        <Link
+          href="/dashboard/krypt/create"
+          className="fixed bottom-[80px] cursor-pointer right-4 lg:bottom-8 lg:right-8 bg-[#B2F17E] text-[#222227] rounded-full px-4 py-3 shadow-lg flex items-center z-20 hover:bg-opacity-90 transition-all"
+        >
+          <FiPlus className="h-5 w-5 mr-2" />
+          <span className="font-medium">Create Krypt</span>
+        </Link>
+      )}
 
       {/* Fixed bottom navbar for mobile */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#222227] border-t border-gray-700 z-10">

@@ -20,6 +20,8 @@ import { useUnlockedKrypts } from "@/app/_hooks/user/krypt/useUnlockedKrypt";
 import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import { useCommentsForKrypts } from "@/app/_hooks/user/krypt/useCommentsForKrypts";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
+import YouTubePlayer from "@/app/_components/players/youtubeMusicPlayer";
+// Adjust the import path as needed
 
 export default function KryptUnlockPage() {
   const router = useRouter();
@@ -44,6 +46,13 @@ export default function KryptUnlockPage() {
       router.push(`/dashboard/krypt/${id}/answer`);
     }
   }, [kryptLoading, allowed, id, router]);
+
+  // Function to check if a string is a YouTube URL
+  const isYouTubeUrl = (str: string): boolean => {
+    const youtubeRegex =
+      /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    return youtubeRegex.test(str);
+  };
 
   const handleCopyLink = () => {
     const url = window.location.href;
@@ -96,9 +105,6 @@ export default function KryptUnlockPage() {
       </div>
     );
   }
-
-  // Fix: Removed the problematic redirect logic from here
-  // The useEffect above will handle the redirection
 
   return (
     <div className="flex flex-col min-h-screen bg-[#1A1A1F] text-white">
@@ -200,12 +206,10 @@ export default function KryptUnlockPage() {
                 </div>
               )}
               {item.type === "sound" && (
-                <div className="bg-[#2A2A30] p-3 rounded-md">
-                  <audio controls className="w-full" src={item.content}>
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
+                // Render YouTube Player for YouTube links
+                <YouTubePlayer url={item.content} title="YouTube Music" />
               )}
+              {/* Add support for directly added YouTube links */}
             </div>
           ))}
         </div>
