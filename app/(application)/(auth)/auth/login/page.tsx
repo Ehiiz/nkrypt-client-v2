@@ -109,7 +109,7 @@ export default function Page() {
             <p>Share</p>
             <p>Socialize</p>
             <p className="text-[50px] font-bold text-[#B2F17E]">Nkrypt</p>
-            <p className="text-[14px]">a new weak to engage</p>
+            <p className="text-[14px]">a new way to engage</p>
           </div>
 
           <div className="flex justify-between">
