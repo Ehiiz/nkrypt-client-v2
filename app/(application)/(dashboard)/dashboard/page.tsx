@@ -10,8 +10,6 @@ function Dashboard() {
     return <div>Loading...</div>;
   }
 
-  console.log(krypts);
-
   return (
     <div className="w-full min-h-screen bg-[#2E3238]">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

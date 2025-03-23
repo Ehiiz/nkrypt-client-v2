@@ -21,8 +21,9 @@ import { useCommentsForKrypts } from "@/app/_hooks/user/krypt/useCommentsForKryp
 import { useKryptDetials } from "@/app/_hooks/user/krypt/useKryptDetails";
 import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
+import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 
-export default function KryptDetailsPage() {
+function KryptDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
@@ -438,3 +439,5 @@ export default function KryptDetailsPage() {
     </div>
   );
 }
+
+export default authUserWrapper(KryptDetailsPage);

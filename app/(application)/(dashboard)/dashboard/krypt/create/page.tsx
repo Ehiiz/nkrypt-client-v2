@@ -21,6 +21,7 @@ import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import { KryptTypeEnum } from "@/app/_hooks/user/krypt/krypt.interface";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
 import { useRouter } from "next/navigation";
+import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 
 // Type definitions
 type ContentItem = {
@@ -928,4 +929,4 @@ const CreateKryptForm = () => {
   );
 };
 
-export default CreateKryptForm;
+export default authUserWrapper(CreateKryptForm);

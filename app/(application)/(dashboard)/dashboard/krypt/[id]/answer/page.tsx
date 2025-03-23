@@ -6,6 +6,7 @@ import { useKryptQuestions } from "@/app/_hooks/user/krypt/useKryptQuestions";
 import { KryptTypeEnum } from "@/app/_hooks/user/krypt/krypt.interface";
 import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
+import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 
 const KryptAnswerPage = () => {
   const router = useRouter();
@@ -193,4 +194,4 @@ const KryptAnswerPage = () => {
   );
 };
 
-export default KryptAnswerPage;
+export default authUserWrapper(KryptAnswerPage);

@@ -21,9 +21,11 @@ import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import { useCommentsForKrypts } from "@/app/_hooks/user/krypt/useCommentsForKrypts";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
 import YouTubePlayer from "@/app/_components/players/youtubeMusicPlayer";
+import authUserWrapper from "@/app/_utils/middlewares/userAuth";
+import Link from "next/link";
 // Adjust the import path as needed
 
-export default function KryptUnlockPage() {
+function KryptUnlockPage() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
@@ -101,7 +103,11 @@ export default function KryptUnlockPage() {
   if (error || !krypt) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-[#1A1A1F] text-gray-400">
-        Error loading krypt or krypt not found
+        <p>Error loading krypt or krypt not found</p>
+        <button
+          onClick={() => router.replace(`/dashboard/krypt/${id}`)}
+          className="text-[#B2F17E] hover:text-[#87F28A]"
+        ></button>
       </div>
     );
   }
@@ -408,3 +414,5 @@ export default function KryptUnlockPage() {
     </div>
   );
 }
+
+export default authUserWrapper(KryptUnlockPage);

@@ -9,6 +9,7 @@ import { useUserContext } from "@/app/_utils/context/userContext";
 import { useUserKrypts } from "@/app/_hooks/user/krypt/useUserKrypts";
 import { IReponseFormattedKrypt } from "@/app/_hooks/user/krypt/krypt.interface";
 import Link from "next/link";
+import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 
 // KryptList Component
 const KryptList = ({
@@ -152,7 +153,7 @@ const KryptList = ({
   );
 };
 
-export default function ProfilePage() {
+function ProfilePage() {
   const pathname = usePathname();
   const { user } = useUserContext();
   const [activeTab, setActiveTab] = React.useState<"mykrypts" | "dekrypts">(
@@ -273,3 +274,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+export default authUserWrapper(ProfilePage);
