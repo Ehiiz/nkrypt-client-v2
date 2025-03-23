@@ -39,6 +39,16 @@ const nextConfig: NextConfig = {
         hostname: "**.s3.amazonaws.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "**", // Allow all HTTPS domains
+        port: "",
+      },
+      {
+        protocol: "http",
+        hostname: "**", // Allow all HTTP domains
+        port: "",
+      },
     ],
   },
 };
