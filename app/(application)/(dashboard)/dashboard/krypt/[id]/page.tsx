@@ -6,8 +6,6 @@ import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import {
   MessageCircle,
-  ThumbsUp,
-  ThumbsDown,
   Share2,
   ArrowLeft,
   Copy,
@@ -16,20 +14,22 @@ import {
   Facebook,
   Link as LinkIcon,
 } from "lucide-react";
-import { useCommentsForKrypts } from "@/app/_hooks/user/krypt/useCommentsForKrypts";
-
 import { useKryptDetials } from "@/app/_hooks/user/krypt/useKryptDetails";
-import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
-import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
 import authUserWrapper from "@/app/_utils/middlewares/userAuth";
+import StatsAndActionCard from "@/app/_components/cards/statsAndActionCard";
+import CommentsList from "@/app/_components/lists/commentsList";
+import ShareCard from "@/app/_components/cards/shareCard";
+import KryptInfoCard from "@/app/_components/cards/kryptInfoCard";
+import CalendarIcon from "@/app/_components/custom/svgs/clock";
+import CommentAndShareTab from "@/app/_components/tabs/commentAndShareTab";
+import CreatorCard from "@/app/_components/cards/creatorCard";
+import SubHeader from "@/app/_components/headers/subHeader";
 
 function KryptDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
   const [activeTab, setActiveTab] = useState<"comments" | "share">("comments");
-  const [copied, setCopied] = useState(false);
-  const [commentText, setCommentText] = useState("");
 
   const {
     kryptDetail,
@@ -37,50 +37,7 @@ function KryptDetailsPage() {
     kryptDetailLoading,
   } = useKryptDetials({ id });
 
-  const {
-    comments,
-    error: commentsError,
-    kryptLoading: commentsLoading,
-    mutateComments,
-  } = useCommentsForKrypts({ id });
-
-  const handleCopyLink = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleCommentSubmit = async () => {
-    if (!commentText.trim()) return;
-    try {
-      const data = await UserKryptService.commentOnKrypt({
-        comment: commentText,
-        id: id,
-      });
-
-      if (data.success) {
-        toastAlert({
-          type: ToastType.success,
-          message: "Comment submitted successfully!",
-        });
-        setCommentText("");
-        mutateComments();
-      } else {
-        toastAlert({
-          type: ToastType.error,
-          message: "Error submitting comment",
-        });
-      }
-    } catch (error) {
-      toastAlert({
-        type: ToastType.error,
-        message: "Error submitting comment",
-      });
-    }
-  };
-
-  if (kryptDetailLoading || commentsLoading) {
+  if (kryptDetailLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-[#1A1A1F] text-gray-400">
         Loading...
@@ -99,75 +56,17 @@ function KryptDetailsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#1A1A1F] text-white">
       {/* Header */}
-      <header className="flex justify-between items-center p-4 border-b border-gray-800 bg-[#222227]">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center text-gray-300 hover:text-[#B2F17E]"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          Back
-        </button>
-        <div className="text-[#B2F17E] font-bold text-xl">NKRYPT</div>
-      </header>
+      <SubHeader />
 
       {/* Krypt Content */}
       <div className="flex-1 p-4 max-w-3xl mx-auto w-full">
         {/* Creator Info */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-full overflow-hidden">
-            <Image
-              src={kryptDetail.creatorImage || "/placeholder-avatar.png"}
-              alt={kryptDetail.creatorName || "alt image"}
-              width={48}
-              height={48}
-              className="object-cover"
-            />
-          </div>
-          <div>
-            <p className="text-[#B2F17E] font-semibold">
-              {kryptDetail.creatorName}
-            </p>
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              <span className="flex items-center gap-1">
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect
-                    x="3"
-                    y="4"
-                    width="18"
-                    height="18"
-                    rx="2"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M16 2V6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M8 2V6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <path d="M3 10H21" stroke="currentColor" strokeWidth="2" />
-                </svg>
-                {new Date(kryptDetail.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
-          </div>
-        </div>
+
+        <CreatorCard
+          createdAt={kryptDetail.createdAt}
+          creatorImage={kryptDetail.creatorImage}
+          creatorName={kryptDetail.creatorName}
+        />
 
         {/* Title and Description */}
         <div className="mb-6">
@@ -178,261 +77,37 @@ function KryptDetailsPage() {
         </div>
 
         {/* Krypt Info Card */}
-        <div className="bg-[#222227] rounded-lg p-5 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400 bg-[#2A2A30] px-3 py-1 rounded-full">
-                {kryptDetail.type}
-              </span>
-              {kryptDetail.draft && (
-                <span className="text-yellow-400 bg-yellow-400/20 px-3 py-1 rounded-full text-xs">
-                  Draft
-                </span>
-              )}
-              {kryptDetail.isOwner && (
-                <span className="text-[#B2F17E] bg-[#B2F17E]/20 px-3 py-1 rounded-full text-xs">
-                  Owner
-                </span>
-              )}
-            </div>
-            <div className="text-xs text-gray-400">
-              Last updated:{" "}
-              {new Date(kryptDetail.updatedAt).toLocaleDateString()}
-            </div>
-          </div>
-
-          {!kryptDetail.hasAccess && (
-            <div className="bg-[#333339] p-4 rounded-md text-center my-6">
-              <p className="text-gray-300 mb-3">
-                You need to unlock this krypt to view its content
-              </p>
-              <button
-                onClick={() => router.push(`/dashboard/krypt/${id}/answer`)}
-                className="bg-[#6558C8] hover:bg-[#5649B9] transition-colors text-white px-6 py-2 rounded-md"
-              >
-                Unlock this krypt
-              </button>
-            </div>
-          )}
-
-          {kryptDetail.isDekrypted && (
-            <div className="bg-[#B2F17E]/20 p-4 rounded-md text-center my-6">
-              <p className="text-[#B2F17E] mb-3">
-                You have successfully unlocked this krypt!
-              </p>
-              <button
-                onClick={() => router.push(`/dashboard/krypt/${id}/unlock`)}
-                className="bg-[#6558C8] hover:bg-[#5649B9] transition-colors text-white px-6 py-2 rounded-md"
-              >
-                View Krypt
-              </button>
-            </div>
-          )}
-
-          {/* Show View Krypt button when hasAccess is true but not isDekrypted */}
-          {kryptDetail.hasAccess && !kryptDetail.isDekrypted && (
-            <div className="bg-[#333339] p-4 rounded-md text-center my-6">
-              <p className="text-gray-300 mb-3">
-                You have access to view this krypt&apos;s content
-              </p>
-              <button
-                onClick={() => router.push(`/dashboard/krypt/${id}/unlock`)}
-                className="bg-[#6558C8] hover:bg-[#5649B9] transition-colors text-white px-6 py-2 rounded-md"
-              >
-                View Krypt
-              </button>
-            </div>
-          )}
-        </div>
+        <KryptInfoCard
+          id={id}
+          hasAccess={kryptDetail.hasAccess}
+          isDekrypted={kryptDetail.isDekrypted}
+          draft={kryptDetail.draft}
+          updatedAt={kryptDetail.updatedAt}
+          isOwner={kryptDetail.isOwner}
+          type={kryptDetail.type}
+        />
 
         {/* Stats and Actions */}
-        <div className="bg-[#222227] rounded-lg p-4">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-6">
-              <div className="flex items-center gap-2">
-                <ThumbsUp size={18} className="text-[#B2F17E]" />
-                <span className="text-[#B2F17E] font-medium">
-                  {kryptDetail.successCount}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThumbsDown size={18} className="text-gray-400" />
-                <span className="text-gray-400 font-medium">
-                  {kryptDetail.failureCount}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MessageCircle size={18} className="text-gray-400" />
-                <span className="text-gray-400 font-medium">
-                  {kryptDetail.commentCount}
-                </span>
-              </div>
-            </div>
-            <button
-              className="text-[#B2F17E]"
-              onClick={() => setActiveTab("share")}
-            >
-              <Share2 size={18} />
-            </button>
-          </div>
-        </div>
+        <StatsAndActionCard
+          commentCount={kryptDetail.commentCount}
+          successCount={kryptDetail.successCount}
+          failureCount={kryptDetail.failureCount}
+          buttonAction={() => setActiveTab("share")}
+        />
 
         {/* Tabs for Comments and Share */}
-        <div className="flex mt-6 rounded-t-lg overflow-hidden bg-[#222227]">
-          <button
-            className={`flex-1 py-3 flex justify-center items-center gap-2 font-medium ${
-              activeTab === "comments"
-                ? "bg-[#6558C8] text-white"
-                : "text-gray-400 hover:text-gray-200"
-            }`}
-            onClick={() => setActiveTab("comments")}
-          >
-            <MessageCircle size={18} />
-            Comments
-          </button>
-          <button
-            className={`flex-1 py-3 flex justify-center items-center gap-2 font-medium ${
-              activeTab === "share"
-                ? "bg-[#6558C8] text-white"
-                : "text-gray-400 hover:text-gray-200"
-            }`}
-            onClick={() => setActiveTab("share")}
-          >
-            <Share2 size={18} />
-            Share
-          </button>
-        </div>
+
+        <CommentAndShareTab
+          tab={activeTab}
+          tabAction={(newTab) => setActiveTab(newTab)}
+        />
 
         {/* Comments or Share Content */}
         <div className="bg-[#222227] rounded-b-lg p-4">
           {activeTab === "comments" ? (
-            <>
-              {/* Comment Input */}
-              <div className="flex items-start gap-3 mb-6">
-                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                  <div className="w-full h-full bg-[#6558C8]"></div>
-                </div>
-                <div className="flex-1">
-                  <textarea
-                    placeholder="Add a comment..."
-                    className="w-full bg-[#2A2A30] rounded-md p-3 text-gray-200 outline-none focus:ring-1 focus:ring-[#B2F17E] resize-none"
-                    rows={3}
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                  />
-                  <div className="flex justify-end mt-2">
-                    <button
-                      className="bg-[#6558C8] hover:bg-[#5649B9] transition-colors text-white px-4 py-2 rounded-md"
-                      onClick={handleCommentSubmit}
-                      disabled={!commentText.trim()}
-                    >
-                      Comment
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Comments List */}
-              {commentsError ? (
-                <div className="text-center py-4 text-gray-400">
-                  Error loading comments
-                </div>
-              ) : comments && comments.length > 0 ? (
-                <div className="space-y-4">
-                  {comments.map((comment) => (
-                    <div key={comment._id} className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                        <Image
-                          src={
-                            comment.commenterImage || "/placeholder-avatar.png"
-                          }
-                          alt={comment.commenterName}
-                          width={32}
-                          height={32}
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 bg-[#2A2A30] p-3 rounded-lg">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-[#B2F17E] text-sm font-medium">
-                            {comment.commenterName}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            {new Date(comment.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="text-gray-200 text-sm">
-                          {comment?.comment}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-400">
-                  No comments yet. Be the first to comment!
-                </div>
-              )}
-            </>
+            <CommentsList id={id} />
           ) : (
-            <div className="p-2">
-              <h3 className="text-lg text-white mb-4">Share this krypt</h3>
-
-              <div className="flex justify-center gap-6 mb-6">
-                <button className="flex flex-col items-center gap-2 text-gray-300 hover:text-[#B2F17E]">
-                  <div className="w-12 h-12 rounded-full bg-[#2A2A30] flex items-center justify-center">
-                    <Twitter size={20} />
-                  </div>
-                  <span className="text-xs">Twitter</span>
-                </button>
-
-                <button className="flex flex-col items-center gap-2 text-gray-300 hover:text-[#B2F17E]">
-                  <div className="w-12 h-12 rounded-full bg-[#2A2A30] flex items-center justify-center">
-                    <Facebook size={20} />
-                  </div>
-                  <span className="text-xs">Facebook</span>
-                </button>
-
-                <button
-                  className="flex flex-col items-center gap-2 text-gray-300 hover:text-[#B2F17E]"
-                  onClick={handleCopyLink}
-                >
-                  <div className="w-12 h-12 rounded-full bg-[#2A2A30] flex items-center justify-center">
-                    {copied ? (
-                      <Check size={20} className="text-[#B2F17E]" />
-                    ) : (
-                      <LinkIcon size={20} />
-                    )}
-                  </div>
-                  <span className="text-xs">
-                    {copied ? "Copied!" : "Copy Link"}
-                  </span>
-                </button>
-              </div>
-
-              <div className="bg-[#2A2A30] p-3 rounded-md flex items-center">
-                <input
-                  type="text"
-                  value={
-                    typeof window !== "undefined"
-                      ? window.location.href
-                      : `https://nkrypt.app/krypt/${id}`
-                  }
-                  readOnly
-                  className="bg-transparent flex-1 text-gray-300 outline-none overflow-hidden text-ellipsis"
-                />
-                <button
-                  onClick={handleCopyLink}
-                  className="ml-2 text-gray-400 hover:text-[#B2F17E]"
-                >
-                  {copied ? (
-                    <Check size={18} className="text-[#B2F17E]" />
-                  ) : (
-                    <Copy size={18} />
-                  )}
-                </button>
-              </div>
-            </div>
+            <ShareCard id={id} />
           )}
         </div>
       </div>

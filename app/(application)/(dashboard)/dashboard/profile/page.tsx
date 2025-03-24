@@ -10,6 +10,7 @@ import { useUserKrypts } from "@/app/_hooks/user/krypt/useUserKrypts";
 import { IReponseFormattedKrypt } from "@/app/_hooks/user/krypt/krypt.interface";
 import Link from "next/link";
 import authUserWrapper from "@/app/_utils/middlewares/userAuth";
+import ProfileCard from "@/app/_components/cards/profileCard";
 
 // KryptList Component
 const KryptList = ({
@@ -183,61 +184,15 @@ function ProfilePage() {
       </header>
 
       {/* Profile Info */}
-      <div className="relative">
-        {/* Cover image */}
-        <div className="h-32 bg-gradient-to-r from-[#6558C8] to-[#F0A4FF]"></div>
 
-        <div className="flex flex-col items-center -mt-16 px-4">
-          <div className="relative mb-3">
-            <div className="rounded-full overflow-hidden border-4 border-[#F0A4FF] h-28 w-28 bg-[#222227]">
-              <Image
-                src={user?.profileImage || "/placeholder-avatar.png"}
-                alt="Profile"
-                width={112}
-                height={112}
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
-
-          <div className="text-center mb-3">
-            <p className="text-[#B2F17E] font-semibold text-xl">
-              @{user?.username || "username"}
-            </p>
-            <p className="text-sm text-gray-300 mt-2 max-w-md">
-              {user?.bio || "No bio available"}
-            </p>
-          </div>
-
-          {/* Stats */}
-          <div className="flex w-full justify-center gap-12 mb-4">
-            <div className="text-center">
-              <p className="text-[#B2F17E] font-bold text-lg">
-                {user?.followersCount || 0}
-              </p>
-              <p className="text-sm text-gray-300">Followers</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[#B2F17E] font-bold text-lg">
-                {user?.followingCount || 0}
-              </p>
-              <p className="text-sm text-gray-300">Following</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[#B2F17E] font-bold text-lg">
-                {myKrypts?.length || 0}
-              </p>
-              <p className="text-sm text-gray-300">Krypts</p>
-            </div>
-          </div>
-
-          {/* Settings Button */}
-          <button className="flex items-center gap-2 bg-[#6558C8] hover:bg-[#5649B9] transition-colors text-white px-5 py-2 rounded-full mb-6">
-            <Settings size={16} />
-            <span>Settings</span>
-          </button>
-        </div>
-      </div>
+      <ProfileCard
+        followersCount={user?.followersCount}
+        followingCount={user?.followingCount}
+        profileImage={user?.profileImage}
+        bio={user?.bio}
+        username={user?.username}
+        kryptCount={myKrypts.length}
+      />
 
       {/* Tabs */}
       <div className="flex bg-[#1A1A1F]  rounded-t-xl overflow-hidden sticky top-0 z-10">

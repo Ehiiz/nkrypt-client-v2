@@ -85,7 +85,9 @@ function Explore() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
       >
         {krypts.length > 0 ? (
-          krypts.map((krypt, i) => <KryptCard key={i} {...krypt} />)
+          krypts.map((krypt, i) => (
+            <KryptCard key={i} id={krypt._id || krypt.id} {...krypt} />
+          ))
         ) : (
           <div className="col-span-full text-center py-12 text-gray-400">
             No krypts found {activeSearch && `for "${activeSearch}"`}
