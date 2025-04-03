@@ -19,6 +19,7 @@ export function KryptCard({
   creatorName,
   creatorId,
   creatorImage,
+  tags,
 }: IReponseFormattedKrypt) {
   // Format the date to show relative time
   const formattedDate = formatDistanceToNow(new Date(createdAt), {
@@ -76,6 +77,41 @@ export function KryptCard({
               <p className="text-sm text-gray-400 line-clamp-2 mb-4">
                 {description}
               </p>
+            )}
+
+            {/* Tags Section - First 3 tags */}
+            {tags && tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {tags.slice(0, 3).map((tag) => (
+                  <div
+                    key={tag.id}
+                    className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Optional: Add navigation to tag profile
+                    }}
+                  >
+                    <div className="w-4 h-4 rounded-full overflow-hidden mr-1">
+                      <Image
+                        src={tag.profileImage || "/placeholder-avatar.png"}
+                        alt={tag.username}
+                        width={16}
+                        height={16}
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="text-xs text-gray-300">
+                      {tag.username}
+                    </span>
+                  </div>
+                ))}
+                {tags.length > 3 && (
+                  <div className="text-xs text-gray-400 flex items-center">
+                    +{tags.length - 3} more
+                  </div>
+                )}
+              </div>
             )}
           </div>
 

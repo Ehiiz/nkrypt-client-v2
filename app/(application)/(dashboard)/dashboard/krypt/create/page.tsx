@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -22,6 +22,7 @@ import { KryptTypeEnum } from "@/app/_hooks/user/krypt/krypt.interface";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
 import { useRouter } from "next/navigation";
 import authUserWrapper from "@/app/_utils/middlewares/userAuth";
+import { UserTagInput } from "@/app/_components/cards/userTags";
 
 // Type definitions
 type ContentItem = {
@@ -43,6 +44,7 @@ type KryptData = {
   type: KryptTypeEnum;
   draft: boolean;
   questions: Question[];
+  tags: string[]; // Add tagIds array to store the user tags
 };
 
 const CreateKryptForm = () => {
@@ -57,6 +59,7 @@ const CreateKryptForm = () => {
     type: KryptTypeEnum.NO_LOCK,
     draft: true,
     questions: [],
+    tags: [], // Initialize empty tags array
   });
 
   // Current content item being edited
@@ -85,6 +88,14 @@ const CreateKryptForm = () => {
       [name]: value,
     });
   };
+
+  // Handle tag changes from UserTagInput
+  const handleTagsChange = useCallback((tags: string[]) => {
+    setKryptData((prev) => ({
+      ...prev,
+      tags,
+    }));
+  }, []);
 
   // Handle content type change
   const handleContentTypeChange = (type: "text" | "image" | "sound") => {
@@ -286,6 +297,7 @@ const CreateKryptForm = () => {
 
     console.log("Submitting Krypt:", submissionData);
     console.log(submissionData.content);
+    console.log("Tagged Users:", submissionData.tagIds);
 
     const data = await UserKryptService.createKrypt(submissionData);
     console.log(data);
@@ -338,7 +350,7 @@ const CreateKryptForm = () => {
         />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-4">
         <label htmlFor="description" className="block text-sm font-medium mb-1">
           Description
         </label>
@@ -350,6 +362,17 @@ const CreateKryptForm = () => {
           rows={4}
           className="w-full bg-[#333339] border border-gray-700 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#B2F17E]"
           placeholder="Enter krypt description"
+        />
+      </div>
+
+      {/* User Tag Input Component */}
+      <div className="mb-6">
+        <UserTagInput
+          label="Tag Users (Optional)"
+          placeholder="Search for users to tag..."
+          required={false}
+          onChange={handleTagsChange}
+          className="mb-4"
         />
       </div>
 

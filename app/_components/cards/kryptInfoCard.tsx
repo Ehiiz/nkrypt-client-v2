@@ -1,4 +1,5 @@
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function KryptInfoCard({
   type,
@@ -8,6 +9,7 @@ export default function KryptInfoCard({
   draft,
   isOwner,
   id,
+  tags = [],
 }: {
   type: string;
   updatedAt: string;
@@ -16,6 +18,7 @@ export default function KryptInfoCard({
   draft?: boolean;
   isOwner?: boolean;
   id: string;
+  tags?: { username: string; id: string; profileImage: string }[];
 }) {
   const router = useRouter();
   return (
@@ -40,6 +43,38 @@ export default function KryptInfoCard({
           Last updated: {new Date(updatedAt).toLocaleDateString()}
         </div>
       </div>
+
+      {/* Tags section - show first 3 tags */}
+      {tags && tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {tags.slice(0, 3).map((tag) => (
+            <div
+              key={tag.id}
+              className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                // Optional navigation to tag profile
+              }}
+            >
+              <div className="w-4 h-4 rounded-full overflow-hidden mr-1">
+                <Image
+                  src={tag.profileImage || "/placeholder-avatar.png"}
+                  alt={tag.username}
+                  width={16}
+                  height={16}
+                  className="object-cover"
+                />
+              </div>
+              <span className="text-xs text-gray-300">{tag.username}</span>
+            </div>
+          ))}
+          {tags.length > 3 && (
+            <div className="text-xs text-gray-400 flex items-center">
+              +{tags.length - 3} more
+            </div>
+          )}
+        </div>
+      )}
 
       {!hasAccess && (
         <div className="bg-[#333339] p-4 rounded-md text-center my-6">

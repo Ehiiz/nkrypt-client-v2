@@ -88,6 +88,7 @@ function KryptDetailsPage() {
           updatedAt={kryptDetail.updatedAt}
           isOwner={kryptDetail.isOwner}
           type={kryptDetail.type}
+          tags={kryptDetail.tags}
         />
 
         {/* Stats and Actions */}

@@ -84,6 +84,37 @@ function KryptUnlockPage() {
           <p style={{ whiteSpace: "pre-wrap" }} className="text-gray-300">
             {krypt.description}
           </p>
+          {krypt.tags && krypt.tags.length > 0 && (
+            <div className="flex flex-wrap mt-2 gap-2 mb-3">
+              {krypt.tags.slice(0, 3).map((tag) => (
+                <div
+                  key={tag.id}
+                  className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Optional: Add navigation to tag profile
+                  }}
+                >
+                  <div className="w-4 h-4 rounded-full overflow-hidden mr-1">
+                    <Image
+                      src={tag.profileImage || "/placeholder-avatar.png"}
+                      alt={tag.username}
+                      width={16}
+                      height={16}
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="text-xs text-gray-300">{tag.username}</span>
+                </div>
+              ))}
+              {krypt.tags.length > 3 && (
+                <div className="text-xs text-gray-400 flex items-center">
+                  +{krypt.tags.length - 3} more
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Content */}

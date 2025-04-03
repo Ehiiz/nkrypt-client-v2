@@ -17,6 +17,7 @@ export interface IRequestCreateKrypt {
     options?: string[];
     index: number;
   }[];
+  tags?: string[];
 }
 
 export interface IKryptsReponse {
@@ -65,6 +66,7 @@ export interface IReponseFormattedKrypt {
   creatorName: string;
   creatorId: string;
   creatorImage: string;
+  tags?: { id: string; profileImage: string; username: string }[];
 }
 
 export interface IResponseFormattedUnlockedKrypt {
@@ -79,6 +81,7 @@ export interface IResponseFormattedUnlockedKrypt {
   creatorId: string;
   creatorImage: string;
   createdAt?: string;
+  tags: { username: string; profileImage: string; id: string }[];
 }
 
 export interface IComment {
