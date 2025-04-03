@@ -88,7 +88,10 @@ function KryptUnlockPage() {
           {krypt.content.map((item, index) => (
             <div key={index} className="mb-4">
               {item.type === "text" && (
-                <p className="text-gray-200 whitespace-pre-wrap">
+                <p
+                  style={{ whiteSpace: "pre-wrap" }}
+                  className="text-gray-200 whitespace-pre-wrap"
+                >
                   {item.content}
                 </p>
               )}
