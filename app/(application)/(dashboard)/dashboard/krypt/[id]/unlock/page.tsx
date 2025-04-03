@@ -87,7 +87,8 @@ function KryptUnlockPage() {
           {krypt.tags && krypt.tags.length > 0 && (
             <div className="flex flex-wrap mt-2 gap-2 mb-3">
               {krypt.tags.slice(0, 3).map((tag) => (
-                <div
+                <Link
+                  href={`/dashboard/profile/${tag.id}`}
                   key={tag.id}
                   className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1"
                   onClick={(e) => {
@@ -106,7 +107,7 @@ function KryptUnlockPage() {
                     />
                   </div>
                   <span className="text-xs text-gray-300">{tag.username}</span>
-                </div>
+                </Link>
               ))}
               {krypt.tags.length > 3 && (
                 <div className="text-xs text-gray-400 flex items-center">

@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function KryptInfoCard({
   type,
@@ -48,7 +49,8 @@ export default function KryptInfoCard({
       {tags && tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           {tags.slice(0, 3).map((tag) => (
-            <div
+            <Link
+              href={`/dashboard/profile/${tag.id}`}
               key={tag.id}
               className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1"
               onClick={(e) => {
@@ -66,7 +68,7 @@ export default function KryptInfoCard({
                 />
               </div>
               <span className="text-xs text-gray-300">{tag.username}</span>
-            </div>
+            </Link>
           ))}
           {tags.length > 3 && (
             <div className="text-xs text-gray-400 flex items-center">

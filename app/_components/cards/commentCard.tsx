@@ -4,7 +4,10 @@ import Link from "next/link";
 export default function CommentCard(comment: IComment) {
   return (
     <div key={comment._id} className="flex gap-3">
-      <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+      <Link
+        href={`/dashboard/profile/${comment.commenterId}`}
+        className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0"
+      >
         <Image
           src={comment.commenterImage || "/placeholder-avatar.png"}
           alt={comment.commenterName}
@@ -12,7 +15,7 @@ export default function CommentCard(comment: IComment) {
           height={32}
           className="object-cover"
         />
-      </div>
+      </Link>
       <div className="flex-1 bg-[#2A2A30] p-3 rounded-lg">
         <div className="flex justify-between items-center mb-1">
           <Link
