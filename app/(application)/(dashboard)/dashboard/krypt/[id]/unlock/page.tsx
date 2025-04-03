@@ -75,6 +75,7 @@ function KryptUnlockPage() {
           createdAt={krypt.createdAt!}
           creatorImage={krypt.creatorImage}
           creatorName={krypt.creatorName}
+          creatorId={krypt.creatorId}
         />
 
         {/* Title and Description */}

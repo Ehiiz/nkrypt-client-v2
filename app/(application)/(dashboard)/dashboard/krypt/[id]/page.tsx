@@ -66,6 +66,7 @@ function KryptDetailsPage() {
           createdAt={kryptDetail.createdAt}
           creatorImage={kryptDetail.creatorImage}
           creatorName={kryptDetail.creatorName}
+          creatorId={kryptDetail.creatorId}
         />
 
         {/* Title and Description */}

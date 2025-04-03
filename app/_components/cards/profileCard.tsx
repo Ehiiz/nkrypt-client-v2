@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 export default function ProfileCard({
   profileImage,
   username,
@@ -6,6 +7,7 @@ export default function ProfileCard({
   followersCount,
   followingCount,
   kryptCount,
+  profileId,
 }: {
   profileImage?: string;
   username?: string;
@@ -13,6 +15,7 @@ export default function ProfileCard({
   followersCount?: number;
   followingCount?: number;
   kryptCount: number;
+  profileId: string;
 }) {
   return (
     <div className="relative">
@@ -43,18 +46,24 @@ export default function ProfileCard({
 
         {/* Stats */}
         <div className="flex w-full justify-center gap-12 mb-4">
-          <div className="text-center">
+          <Link
+            href={`/dashboard/profile/${profileId}/followers`}
+            className="text-center"
+          >
             <p className="text-[#B2F17E] font-bold text-lg">
               {followersCount || 0}
             </p>
             <p className="text-sm text-gray-300">Followers</p>
-          </div>
-          <div className="text-center">
+          </Link>
+          <Link
+            href={`/dashboard/profile/${profileId}/following`}
+            className="text-center"
+          >
             <p className="text-[#B2F17E] font-bold text-lg">
               {followingCount || 0}
             </p>
             <p className="text-sm text-gray-300">Following</p>
-          </div>
+          </Link>
           <div className="text-center">
             <p className="text-[#B2F17E] font-bold text-lg">
               {kryptCount || 0}

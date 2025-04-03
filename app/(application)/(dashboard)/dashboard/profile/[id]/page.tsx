@@ -2,15 +2,22 @@
 "use client";
 
 import React from "react";
-import { Settings, MessageCircle, ThumbsUp } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import {
+  Settings,
+  MessageCircle,
+  ThumbsUp,
+  UserPlus,
+  UserCheck,
+} from "lucide-react";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { useUserContext } from "@/app/_utils/context/userContext";
-import { useUserKrypts } from "@/app/_hooks/user/krypt/useUserKrypts";
 import { IReponseFormattedKrypt } from "@/app/_hooks/user/krypt/krypt.interface";
-import Link from "next/link";
 import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 import ProfileCard from "@/app/_components/cards/profileCard";
+import { useUserProfile } from "@/app/_hooks/user/profile/useUserProfile";
+import { useProfileKrypts } from "@/app/_hooks/user/profile/useProfileKrypts";
+import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
+import { UserProfileHook } from "@/app/_hooks/user/profile/profile.hook";
 
 // KryptList Component
 const KryptList = ({
@@ -155,25 +162,63 @@ const KryptList = ({
 };
 
 function ProfilePage() {
-  const pathname = usePathname();
-  const { user } = useUserContext();
+  const params: { id: string } = useParams();
+  const { profile, profileLoading, mutateUserProfile } = useUserProfile({
+    id: params.id,
+  });
   const [activeTab, setActiveTab] = React.useState<"mykrypts" | "dekrypts">(
     "mykrypts"
   );
+  const [isFollowing, setIsFollowing] = React.useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (profile) {
+      setIsFollowing(profile.isFollowing || false);
+    }
+  }, [profile]);
 
   // Fetch user's krypts
   const {
     krypts: myKrypts,
     kryptLoading: myKryptsLoading,
     error: myKryptsError,
-  } = useUserKrypts({ draft: false });
+  } = useProfileKrypts({ draft: false, id: params.id });
 
   // Fetch user's dekrypts (using the same hook but we'd need to adjust the endpoint in a real implementation)
   const {
     krypts: myDekrypts,
     kryptLoading: myDekryptsLoading,
     error: myDekryptsError,
-  } = useUserKrypts({ dekrypt: true }); // In reality, this would have a different endpoint or param
+  } = useProfileKrypts({ dekrypt: true, id: params.id }); // In reality, this would have a different endpoint or param
+
+  const handleFollowUser = async () => {
+    try {
+      setIsUpdating(true);
+      await UserProfileHook.followOrUnfollowUser({
+        id: params.id,
+        follow: !isFollowing,
+      });
+
+      setIsFollowing(!isFollowing);
+      // Update the profile data to reflect the new follower status
+      mutateUserProfile();
+
+      toastAlert({
+        message: isFollowing
+          ? "Unfollowed successfully"
+          : "Followed successfully",
+        type: ToastType.success,
+      });
+    } catch (error) {
+      toastAlert({
+        message: "Error updating follow status",
+        type: ToastType.error,
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#222227] text-white">
@@ -184,15 +229,46 @@ function ProfilePage() {
       </header>
 
       {/* Profile Info */}
+      <div className="relative">
+        <ProfileCard
+          followersCount={profile?.followersCount}
+          followingCount={profile?.followingCount}
+          profileImage={profile?.profileImage}
+          bio={profile?.bio}
+          username={profile?.username}
+          kryptCount={myKrypts.length}
+          profileId={profile!._id}
+        />
 
-      <ProfileCard
-        followersCount={user?.followersCount}
-        followingCount={user?.followingCount}
-        profileImage={user?.profileImage}
-        bio={user?.bio}
-        username={user?.username}
-        kryptCount={myKrypts.length}
-      />
+        {/* Follow Button - Show only if not current user */}
+        {profile && !profile.isCurrentUser && (
+          <div className="absolute top-4 right-4">
+            <button
+              onClick={handleFollowUser}
+              disabled={isUpdating}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                isFollowing
+                  ? "bg-gray-700 hover:bg-gray-600 text-white"
+                  : "bg-[#6558C8] hover:bg-[#5449B3] text-white"
+              }`}
+            >
+              {isUpdating ? (
+                "Processing..."
+              ) : isFollowing ? (
+                <>
+                  <UserCheck size={18} />
+                  Unfollow
+                </>
+              ) : (
+                <>
+                  <UserPlus size={18} />
+                  Follow
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Tabs */}
       <div className="flex bg-[#1A1A1F]  rounded-t-xl overflow-hidden sticky top-0 z-10">

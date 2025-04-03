@@ -7,6 +7,7 @@ import { CgSmartHomeHeat } from "react-icons/cg";
 import { MdExplore } from "react-icons/md";
 import { RiUser2Fill } from "react-icons/ri";
 import { FiPlus } from "react-icons/fi";
+import { useUserContext } from "@/app/_utils/context/userContext";
 
 export default function DashboardLayout({
   children,
@@ -14,11 +15,16 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user } = useUserContext();
 
   const navItems = [
     { href: "/dashboard", label: "Home", icon: CgSmartHomeHeat },
     { href: "/dashboard/explore", label: "Search", icon: MdExplore },
-    { href: "/dashboard/profile", label: "Profile", icon: RiUser2Fill },
+    {
+      href: `/dashboard/profile/${user?.id}`,
+      label: "Profile",
+      icon: RiUser2Fill,
+    },
     // { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
   ];
 

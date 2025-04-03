@@ -1,5 +1,6 @@
 import { IComment } from "@/app/_hooks/user/krypt/krypt.interface";
 import Image from "next/image";
+import Link from "next/link";
 export default function CommentCard(comment: IComment) {
   return (
     <div key={comment._id} className="flex gap-3">
@@ -14,9 +15,12 @@ export default function CommentCard(comment: IComment) {
       </div>
       <div className="flex-1 bg-[#2A2A30] p-3 rounded-lg">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-[#B2F17E] text-sm font-medium">
+          <Link
+            href={`/dashboard/profile/${comment.commenterId}`}
+            className="text-[#B2F17E] text-sm font-medium"
+          >
             {comment.commenterName}
-          </span>
+          </Link>
           <span className="text-xs text-gray-400">
             {new Date(comment.createdAt).toLocaleTimeString()}{" "}
             {new Date(comment.createdAt).toLocaleDateString()}
