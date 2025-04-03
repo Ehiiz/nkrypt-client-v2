@@ -80,7 +80,9 @@ function KryptUnlockPage() {
         {/* Title and Description */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-white mb-2">{krypt.title}</h1>
-          <p className="text-gray-300">{krypt.description}</p>
+          <p style={{ whiteSpace: "pre-wrap" }} className="text-gray-300">
+            {krypt.description}
+          </p>
         </div>
 
         {/* Content */}

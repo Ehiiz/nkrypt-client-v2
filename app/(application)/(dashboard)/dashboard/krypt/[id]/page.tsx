@@ -73,7 +73,9 @@ function KryptDetailsPage() {
           <h1 className="text-2xl font-bold text-white mb-2">
             {kryptDetail.title}
           </h1>
-          <p className="text-gray-300">{kryptDetail.description}</p>
+          <p style={{ whiteSpace: "pre-wrap" }} className="text-gray-300">
+            {kryptDetail.description}
+          </p>
         </div>
 
         {/* Krypt Info Card */}
