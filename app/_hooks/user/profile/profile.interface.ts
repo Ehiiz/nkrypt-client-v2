@@ -14,6 +14,7 @@ export interface IProfile {
   isCurrentUser: boolean;
   isFollowing: boolean;
   followingUs: boolean;
+  walletAddress: string;
 }
 
 export interface IMiniProfile {

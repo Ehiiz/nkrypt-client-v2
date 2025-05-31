@@ -44,6 +44,7 @@ export interface IResponseAuthLogin {
   token: string;
   user: IStudent;
   completedSetup?: boolean | null;
+  seedPhrase?: string | null;
 }
 
 export interface IResponseAuthEmailVerification

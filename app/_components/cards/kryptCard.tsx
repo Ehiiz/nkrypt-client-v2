@@ -20,6 +20,8 @@ export function KryptCard({
   creatorId,
   creatorImage,
   tags,
+  maxWinners,
+  prizePool, // or prizePool depending on your interface
 }: IReponseFormattedKrypt) {
   // Format the date to show relative time
   const formattedDate = formatDistanceToNow(new Date(createdAt), {
@@ -34,6 +36,10 @@ export function KryptCard({
   };
 
   const statusInfo = getStatusInfo();
+
+  // Check if this krypt has rewards
+  const hasRewards = prizePool && prizePool > 0;
+  const rewardPerWinner = hasRewards && maxWinners ? prizePool / maxWinners : 0;
 
   return (
     <Link href={`/dashboard/krypt/${id}`}>
@@ -62,6 +68,24 @@ export function KryptCard({
                   Owner
                 </span>
               )}
+              {hasRewards && (
+                <span className="text-xs font-medium px-2 py-1 rounded-full bg-[#B2F17E]20 text-[#B2F17E] flex items-center">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="mr-1"
+                  >
+                    <path
+                      d="M12 2L15.09 8.26L22 9L17 13.74L18.18 20.42L12 17.27L5.82 20.42L7 13.74L2 9L8.91 8.26L12 2Z"
+                      fill="#B2F17E"
+                    />
+                  </svg>
+                  Rewarded
+                </span>
+              )}
             </div>
             <span className="text-xs uppercase tracking-wider text-[#C4C4C4]">
               {type}
@@ -79,6 +103,24 @@ export function KryptCard({
               </p>
             )}
 
+            {/* Reward Info Section */}
+            {hasRewards && (
+              <div className="bg-[#2A2A30] rounded-lg p-3 mb-4 border border-[#B2F17E]20">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-[#B2F17E] uppercase tracking-wider">
+                    Reward Pool
+                  </span>
+                  <span className="text-sm font-bold text-[#B2F17E]">
+                    {prizePool} ADA
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span>Max Winners: {maxWinners}</span>
+                  <span>~{rewardPerWinner.toFixed(2)} ADA each</span>
+                </div>
+              </div>
+            )}
+
             {/* Tags Section - First 3 tags */}
             {tags && tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-3">
@@ -86,7 +128,7 @@ export function KryptCard({
                   <Link
                     href={`/dashboard/profile/${tag.id}`}
                     key={tag.id}
-                    className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1"
+                    className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1 hover:bg-[#333339] transition-colors duration-200"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -205,6 +247,27 @@ export function KryptCard({
                   {commentCount}
                 </span>
               </div>
+
+              {/* Reward indicator in stats if has rewards */}
+              {hasRewards && (
+                <div className="flex items-center">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 2L15.09 8.26L22 9L17 13.74L18.18 20.42L12 17.27L5.82 20.42L7 13.74L2 9L8.91 8.26L12 2Z"
+                      fill="#B2F17E"
+                    />
+                  </svg>
+                  <span className="ml-1 text-xs text-[#B2F17E] font-medium">
+                    {prizePool}₳
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Time Badge */}
@@ -232,11 +295,23 @@ export function KryptCard({
                 </div>
               )}
             </div>
-            <div className="ml-3">
+            <div className="ml-3 flex-grow">
               <p className="text-sm font-medium text-white">
                 {creatorName || "Anonymous"}
               </p>
             </div>
+
+            {/* Additional reward info in creator section for mobile */}
+            {hasRewards && (
+              <div className="text-right">
+                <div className="text-xs text-[#B2F17E] font-medium">
+                  {prizePool} ADA
+                </div>
+                <div className="text-xs text-gray-400">
+                  {maxWinners} winners
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

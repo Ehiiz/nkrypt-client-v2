@@ -4,11 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, Link as LinkIcon } from "lucide-react";
 import { useUnlockedKrypts } from "@/app/_hooks/user/krypt/useUnlockedKrypt";
-import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
-import { useCommentsForKrypts } from "@/app/_hooks/user/krypt/useCommentsForKrypts";
-import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
 import YouTubePlayer from "@/app/_components/players/youtubeMusicPlayer";
 import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 import Link from "next/link";
@@ -148,6 +144,9 @@ function KryptUnlockPage() {
               {/* Add support for directly added YouTube links */}
             </div>
           ))}
+          {krypt.backgroundMusic && (
+            <YouTubePlayer url={krypt.backgroundMusic!} title="YouTube Music" />
+          )}
         </div>
 
         {/* Stats and Actions */}

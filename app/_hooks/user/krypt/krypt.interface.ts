@@ -65,6 +65,8 @@ export interface IReponseFormattedKrypt {
   hasAccess?: boolean;
   creatorName: string;
   creatorId: string;
+  maxWinners?: number | null;
+  prizePool?: number | null;
   creatorImage: string;
   tags?: { id: string; profileImage: string; username: string }[];
 }
@@ -81,6 +83,7 @@ export interface IResponseFormattedUnlockedKrypt {
   creatorId: string;
   creatorImage: string;
   createdAt?: string;
+  backgroundMusic?: string;
   tags: { username: string; profileImage: string; id: string }[];
 }
 

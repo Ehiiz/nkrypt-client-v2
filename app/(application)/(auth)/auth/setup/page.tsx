@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import { Fragment } from "react"; // At the top with other imports
 import Image from "next/image";
 import TextInput from "@/app/_components/inputs/textInput";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
@@ -32,6 +33,9 @@ export default function Page() {
   const [validName, setValidName] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [nameLoading, setNameLoading] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState(false);
+  const [seedPhrase, setSeedPhrase] = useState("");
+
   const router = useRouter();
 
   const {
@@ -62,11 +66,15 @@ export default function Page() {
       localStorage.setItem("student", JSON.stringify(response.data?.user));
       UserTokenStorage.setUser(response.data!.user);
 
+      // Store seedphrase and show modal
+      setSeedPhrase(response.data?.seedPhrase || "");
+      setShowModal(true);
+
       toastAlert({
         message: "Setup successful!",
         type: ToastType.success,
       });
-      router.push("/dashboard");
+      // router.push("/dashboard");
     } else {
       toastAlert({
         message: response.message,
@@ -117,6 +125,45 @@ export default function Page() {
 
   return (
     <div className="w-full min-h-screen grid font-aeonik bg-[#2E3238]   justify-center items-center px-[20px] py-[54px]">
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-70 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4 shadow-lg">
+            <h2 className="text-xl font-semibold text-center text-gray-800">
+              Save your seed phrase
+            </h2>
+            <p className="text-sm text-gray-600 text-center">
+              This is your recovery phrase. Copy and store it securely. You
+              won’t be able to see it again.
+            </p>
+            <div className="bg-gray-100 p-4 rounded text-sm font-mono text-black whitespace-pre-wrap break-words max-h-40 overflow-y-auto">
+              {seedPhrase}
+            </div>
+
+            <div className="flex items-center justify-between mt-4 space-x-4">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(seedPhrase);
+                  toastAlert({
+                    message: "Seed phrase copied!",
+                    type: ToastType.success,
+                  });
+                }}
+                className="bg-gray-800 text-white text-sm px-4 py-2 rounded hover:bg-gray-700 transition"
+              >
+                Copy
+              </button>
+
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="bg-[#5744B7] text-white text-sm px-4 py-2 rounded hover:bg-[#463499] transition"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="w-full flex items-center justify-center">
         <div className="max-w-[442px] w-full ">
           <p className="font-[500] text-[40px] text-white mt-[60px]">

@@ -272,6 +272,7 @@ function ProfilePage() {
           username={profile?.username}
           kryptCount={myKrypts.length}
           profileId={params.id}
+          walletAddress={profile?.walletAddress || ""}
         />
 
         {/* Follow Button - Show only if not current user */}

@@ -1,5 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Copy, Check } from "lucide-react";
+
 export default function ProfileCard({
   profileImage,
   username,
@@ -8,6 +13,7 @@ export default function ProfileCard({
   followingCount,
   kryptCount,
   profileId,
+  walletAddress,
 }: {
   profileImage?: string;
   username?: string;
@@ -16,7 +22,25 @@ export default function ProfileCard({
   followingCount?: number;
   kryptCount: number;
   profileId: string;
+  walletAddress: string;
 }) {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(walletAddress);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy address:", err);
+    }
+  };
+
+  const trimAddress = (address: string) => {
+    if (!address) return "";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
   return (
     <div className="relative">
       {/* Cover image */}
@@ -43,6 +67,39 @@ export default function ProfileCard({
             {bio || "No bio available"}
           </p>
         </div>
+
+        <div
+          className="text-center flex items-center gap-2 mb-3 bg-gray-800 hover:bg-gray-700 p-2 rounded-lg cursor-pointer transition-colors group"
+          onClick={handleCopyAddress}
+          title="Click to copy wallet address"
+        >
+          {/* Cardano-inspired coin icon */}
+          <div className="w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-3 h-3 border border-white rounded-full opacity-80"></div>
+          </div>
+
+          <p className="text-gray-300 font-mono text-sm">
+            {trimAddress(walletAddress)}
+          </p>
+
+          <div className="ml-1">
+            {isCopied ? (
+              <Check size={14} className="text-green-400" />
+            ) : (
+              <Copy
+                size={14}
+                className="text-gray-400 group-hover:text-gray-300 transition-colors"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Copy feedback */}
+        {isCopied && (
+          <div className="text-xs text-green-400 mb-2 animate-fade-in">
+            Address copied to clipboard!
+          </div>
+        )}
 
         {/* Stats */}
         <div className="flex w-full justify-center gap-12 mb-4">
@@ -78,6 +135,22 @@ export default function ProfileCard({
         <span>Settings</span>
       </button> */}
       </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }
