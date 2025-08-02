@@ -11,6 +11,9 @@ export const useUserProfile = ({ id }: { id: string }) => {
   const profileLoading = !data && !error;
 
   const profile: IProfile | undefined = data;
+
+  console.log(profile);
+
   return {
     profile,
     error,

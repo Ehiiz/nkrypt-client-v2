@@ -60,6 +60,8 @@ export interface IResponseAuthResetPassword {
 
 export type IResponseAuthCompleteSetup = Omit<IResponseAuthLogin, "token">;
 
+export type IResponseGenerateWallet = Pick<IResponseAuthLogin, "seedPhrase">;
+
 //Others
 export interface IStudent {
   _id: string;

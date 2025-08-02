@@ -3,6 +3,7 @@ import {
   IRequestAuthAccountVerification,
   IRequestCompleteSetup,
   IResponseAuthCompleteSetup,
+  IResponseGenerateWallet,
 } from "./auth.interface";
 import {
   IRequestAuth,
@@ -210,6 +211,31 @@ export class UserAuthHook {
           error.response?.data?.message ||
           error.message ||
           "Failed to check user name";
+
+        return {
+          success: false,
+          status: "error",
+          message: errorMessage,
+          data: null,
+        };
+      }
+      return error;
+    }
+  };
+
+  static generateWallet = async (): Promise<
+    IApiResponse<IResponseGenerateWallet | null>
+  > => {
+    try {
+      const res = await axiosClient.post("/auth/generate-wallet");
+
+      return await res.data;
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to generate wallet setup";
 
         return {
           success: false,

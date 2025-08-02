@@ -1,3 +1,4 @@
+// app/dashboard/profile/[id]/[type]/page.tsx
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -5,7 +6,7 @@ import React from "react";
 import { useUserFollowingProfile } from "@/app/_hooks/user/profile/useUserFollowingProfile";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { UserPlus, UserCheck, ArrowLeft } from "lucide-react";
+import { UserPlus, UserCheck, ArrowLeft, Loader2 } from "lucide-react";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
 import { UserProfileHook } from "@/app/_hooks/user/profile/profile.hook";
 import authUserWrapper from "@/app/_utils/middlewares/userAuth";
@@ -34,24 +35,28 @@ const UserCard = ({
 
   return (
     <div
-      onClick={() => router.push(`/profile/${user._id}`)}
-      className="flex items-center justify-between p-4 bg-[#222227] rounded-lg hover:bg-[#2A2A30] transition-all cursor-pointer"
+      onClick={() => router.push(`/dashboard/profile/${user._id}`)}
+      className="flex items-center justify-between p-4 bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all cursor-pointer"
     >
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full overflow-hidden">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500 shadow-md flex-shrink-0">
           <Image
             src={user.profileImage || "/placeholder-avatar.png"}
             alt={user.username}
             width={48}
             height={48}
-            className="object-cover"
+            className="object-cover w-full h-full"
           />
         </div>
-        <div>
-          <p className="text-[#B2F17E] font-semibold">{user.username}</p>
-          <p className="text-gray-300 text-sm line-clamp-1">{user.bio}</p>
+        <div className="min-w-0">
+          <p className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 truncate">
+            {user.username}
+          </p>
+          <p className="text-slate-300 text-sm line-clamp-1">{user.bio}</p>
           {user.followingUs && !user.isCurrentUser && (
-            <span className="text-xs text-gray-400">Follows you</span>
+            <span className="text-xs text-emerald-400 font-medium">
+              Follows you
+            </span>
           )}
         </div>
       </div>
@@ -60,23 +65,26 @@ const UserCard = ({
         <button
           onClick={handleFollow}
           disabled={isUpdating}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-            user.isFollowing
-              ? "bg-gray-700 hover:bg-gray-600 text-white"
-              : "bg-[#6558C8] hover:bg-[#5449B3] text-white"
-          }`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-md
+            ${
+              isUpdating
+                ? "bg-slate-700/60 text-slate-400 cursor-wait"
+                : user.isFollowing
+                ? "bg-slate-700/60 text-white hover:bg-slate-600/60"
+                : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:scale-105"
+            }`}
         >
           {isUpdating ? (
-            "..."
+            <Loader2 size={16} className="animate-spin" />
           ) : user.isFollowing ? (
             <>
               <UserCheck size={16} />
-              <span className="hidden sm:inline">Unfollow</span>
+              Unfollow
             </>
           ) : (
             <>
               <UserPlus size={16} />
-              <span className="hidden sm:inline">Follow</span>
+              Follow
             </>
           )}
         </button>
@@ -108,17 +116,12 @@ function FollowerAndFollowing() {
         id: userId,
         follow,
       });
-
-      // Update local state
       setLocalUsers((prevUsers) =>
         prevUsers.map((user) =>
           user._id === userId ? { ...user, isFollowing: follow } : user
         )
       );
-
-      // Refresh data
       mutateUserProfile();
-
       toastAlert({
         message: follow ? "Followed successfully" : "Unfollowed successfully",
         type: ToastType.success,
@@ -134,31 +137,32 @@ function FollowerAndFollowing() {
   const pageTitle = params.type === "followers" ? "Followers" : "Following";
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#222227] text-white">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Header */}
-      <header className="flex items-center p-4 border-b border-gray-800">
+      <header className="sticky top-0 z-50 flex items-center px-4 py-3 sm:px-6 bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 shadow-xl">
         <button
           onClick={() => router.back()}
-          className="mr-4 text-gray-400 hover:text-white transition-colors"
+          className="mr-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-700/60 transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
-        <div className="text-lg font-medium">{pageTitle}</div>
-        <div className="ml-auto text-[#B2F17E] font-bold text-xl">NKRYPT</div>
+        <div className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+          {pageTitle}
+        </div>
       </header>
 
       {/* Content */}
-      <div className="flex-1 bg-[#1A1A1F] p-4">
+      <div className="flex-1 p-4 sm:p-6 relative z-10">
         {isValidating && !users ? (
-          <div className="flex justify-center p-6 text-gray-400">
-            Loading...
+          <div className="flex justify-center p-6 text-slate-400">
+            <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
           </div>
         ) : error ? (
           <div className="flex justify-center p-6 text-red-400">
-            Error loading users
+            Error loading users.
           </div>
         ) : localUsers && localUsers.length > 0 ? (
-          <div className="space-y-3 max-w-3xl mx-auto">
+          <div className="space-y-4 max-w-3xl mx-auto">
             {localUsers.map((user) => (
               <UserCard
                 key={user._id}
@@ -168,11 +172,13 @@ function FollowerAndFollowing() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center p-10 text-gray-400">
-            <p className="text-lg mb-4">No {pageTitle.toLowerCase()} found</p>
+          <div className="flex flex-col items-center justify-center p-10 text-slate-400 text-center max-w-sm mx-auto">
+            <p className="text-lg font-semibold mb-4">
+              No {pageTitle.toLowerCase()} found.
+            </p>
             <Link
-              href="/explore"
-              className="px-4 py-2 bg-[#6558C8] hover:bg-[#5449B3] rounded-lg text-white transition-colors"
+              href="/dashboard/explore"
+              className="group relative overflow-hidden px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25"
             >
               Explore users
             </Link>

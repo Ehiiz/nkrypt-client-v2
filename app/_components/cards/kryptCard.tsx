@@ -2,7 +2,22 @@
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import {
+  CheckCircle2,
+  XCircle,
+  MessageCircle,
+  Star,
+  Clock,
+  User,
+  Zap,
+  Trophy,
+  Lock,
+  Unlock,
+  Eye,
+  Crown,
+} from "lucide-react";
 import { IReponseFormattedKrypt } from "@/app/_hooks/user/krypt/krypt.interface";
+import { useRouter } from "next/navigation";
 
 export function KryptCard({
   id,
@@ -21,300 +36,289 @@ export function KryptCard({
   creatorImage,
   tags,
   maxWinners,
-  prizePool, // or prizePool depending on your interface
+  prizePool,
 }: IReponseFormattedKrypt) {
-  // Format the date to show relative time
+  const router = useRouter();
   const formattedDate = formatDistanceToNow(new Date(createdAt), {
     addSuffix: true,
   });
 
-  // Get status text and color
   const getStatusInfo = () => {
-    if (isDekrypted) return { color: "#B2F17E", text: "Dekrypted" };
-    if (hasAccess) return { color: "#FFC600", text: "Access Granted" };
-    return { color: "#C4C4C4", text: "Locked" };
+    if (isDekrypted)
+      return {
+        color: "from-emerald-500 to-green-600",
+        text: "Dekrypted",
+        icon: <Unlock size={12} className="text-white" />,
+        bgColor: "bg-emerald-500/20",
+        borderColor: "border-emerald-400/50",
+      };
+    if (hasAccess)
+      return {
+        color: "from-amber-500 to-orange-600",
+        text: "Access Granted",
+        icon: <Eye size={12} className="text-white" />,
+        bgColor: "bg-amber-500/20",
+        borderColor: "border-amber-400/50",
+      };
+    return {
+      color: "from-slate-600 to-slate-700",
+      text: "Locked",
+      icon: <Lock size={12} className="text-white" />,
+      bgColor: "bg-slate-500/20",
+      borderColor: "border-slate-400/50",
+    };
   };
 
   const statusInfo = getStatusInfo();
-
-  // Check if this krypt has rewards
   const hasRewards = prizePool && prizePool > 0;
   const rewardPerWinner = hasRewards && maxWinners ? prizePool / maxWinners : 0;
 
   return (
-    <Link href={`/dashboard/krypt/${id}`}>
-      <div className="m-3 cursor-pointer group transform transition-all duration-300 hover:-translate-y-1 font-aeonik">
-        <div className="bg-[#222227] rounded-xl overflow-hidden shadow-lg h-full flex flex-col">
-          {/* Status Bar */}
-          <div
-            className="h-1 w-full transition-all duration-300"
-            style={{ backgroundColor: statusInfo.color }}
-          />
-
-          {/* Card Header with Type and Status */}
-          <div className="p-5 flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <span
-                className="text-xs font-medium px-2 py-1 rounded-full"
-                style={{
-                  backgroundColor: `${statusInfo.color}20`,
-                  color: statusInfo.color,
-                }}
-              >
-                {statusInfo.text}
-              </span>
-              {isOwner && (
-                <span className="text-xs font-medium px-2 py-1 rounded-full bg-[#FFC600]20 text-[#FFC600]">
-                  Owner
-                </span>
-              )}
-              {hasRewards && (
-                <span className="text-xs font-medium px-2 py-1 rounded-full bg-[#B2F17E]20 text-[#B2F17E] flex items-center">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-1"
-                  >
-                    <path
-                      d="M12 2L15.09 8.26L22 9L17 13.74L18.18 20.42L12 17.27L5.82 20.42L7 13.74L2 9L8.91 8.26L12 2Z"
-                      fill="#B2F17E"
-                    />
-                  </svg>
-                  Rewarded
-                </span>
-              )}
-            </div>
-            <span className="text-xs uppercase tracking-wider text-[#C4C4C4]">
-              {type}
-            </span>
+    <div onClick={() => router.push(`/dashboard/krypt/${id}`)}>
+      <div className="group cursor-pointer transform transition-all duration-300 hover:scale-[1.02] p-2 sm:p-4">
+        <div className="relative overflow-hidden bg-gradient-to-br from-slate-800/90 via-slate-700/80 to-slate-800/90 backdrop-blur-sm border border-slate-600/30 hover:border-purple-400/50 rounded-3xl shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden rounded-3xl">
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-purple-400/5 to-pink-400/5 rounded-full blur-2xl group-hover:from-purple-400/10 group-hover:to-pink-400/10 transition-all duration-500"></div>
+            <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-gradient-to-tr from-blue-400/5 to-cyan-400/5 rounded-full blur-2xl group-hover:from-blue-400/8 group-hover:to-cyan-400/8 transition-all duration-500"></div>
           </div>
 
-          {/* Card Content */}
-          <div className="px-5 pb-4 flex-grow">
-            <h3 className="text-xl font-bold mb-3 text-[#FFC600] truncate group-hover:text-white transition-colors duration-300">
-              {title}
-            </h3>
-            {description && (
-              <p className="text-sm text-gray-400 line-clamp-2 mb-4">
-                {description}
-              </p>
-            )}
+          {/* Status indicator bar */}
+          <div
+            className={`h-1 w-full bg-gradient-to-r ${statusInfo.color} rounded-t-3xl`}
+          />
 
-            {/* Reward Info Section */}
-            {hasRewards && (
-              <div className="bg-[#2A2A30] rounded-lg p-3 mb-4 border border-[#B2F17E]20">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-[#B2F17E] uppercase tracking-wider">
-                    Reward Pool
+          {/* Header section */}
+          <div className="relative z-10 p-4 sm:p-6 pb-2 sm:pb-4">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Status badge */}
+                <div
+                  className={`flex items-center gap-1.5 ${statusInfo.bgColor} backdrop-blur-sm border ${statusInfo.borderColor} rounded-full px-2 sm:px-3 py-1 sm:py-1.5`}
+                >
+                  <div
+                    className={`w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-r ${statusInfo.color} rounded-full flex items-center justify-center`}
+                  >
+                    {statusInfo.icon}
+                  </div>
+                  <span className="text-xs font-semibold text-white">
+                    {statusInfo.text}
                   </span>
-                  <span className="text-sm font-bold text-[#B2F17E]">
+                </div>
+
+                {/* Owner badge */}
+                {isOwner && (
+                  <div className="flex items-center gap-1.5 bg-amber-500/20 backdrop-blur-sm border border-amber-400/50 rounded-full px-2 sm:px-3 py-1 sm:py-1.5">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center">
+                      <Crown size={12} className="text-white" />
+                    </div>
+                    <span className="text-xs font-semibold text-amber-400">
+                      Owner
+                    </span>
+                  </div>
+                )}
+
+                {/* Rewards badge */}
+                {hasRewards && (
+                  <div className="flex items-center gap-1.5 bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/50 rounded-full px-2 sm:px-3 py-1 sm:py-1.5">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full flex items-center justify-center">
+                      <Trophy size={12} className="text-white" />
+                    </div>
+                    <span className="text-xs font-semibold text-emerald-400">
+                      Rewarded
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Type badge */}
+              <div className="bg-slate-700/60 backdrop-blur-sm border border-slate-500/30 rounded-full px-2 py-1">
+                <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  {type}
+                </span>
+              </div>
+            </div>
+
+            {/* Title and description */}
+            <div className="mb-4">
+              <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-200 group-hover:from-purple-200 group-hover:to-pink-200 transition-all duration-300 line-clamp-2">
+                {title}
+              </h3>
+              {description && (
+                <p className="text-slate-300 text-sm leading-relaxed line-clamp-3">
+                  {description}
+                </p>
+              )}
+            </div>
+
+            {/* Reward info section */}
+            {hasRewards && (
+              <div className="bg-gradient-to-r from-emerald-500/10 to-green-500/10 backdrop-blur-sm border border-emerald-400/20 rounded-2xl p-3 sm:p-4 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full flex items-center justify-center">
+                      <Trophy size={12} className="text-white" />
+                    </div>
+                    <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+                      Reward Pool
+                    </span>
+                  </div>
+                  <span className="text-base sm:text-lg font-bold text-emerald-400">
                     {prizePool} ADA
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-xs text-gray-400">
+                <div className="flex items-center justify-between text-xs text-slate-400">
                   <span>Max Winners: {maxWinners}</span>
-                  <span>~{rewardPerWinner.toFixed(2)} ADA each</span>
+                  <span className="font-medium">
+                    ~{rewardPerWinner.toFixed(2)} ADA each
+                  </span>
                 </div>
               </div>
             )}
 
-            {/* Tags Section - First 3 tags */}
+            {/* Tags section */}
             {tags && tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {tags.slice(0, 3).map((tag) => (
                   <Link
                     href={`/dashboard/profile/${tag.id}`}
                     key={tag.id}
-                    className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1 hover:bg-[#333339] transition-colors duration-200"
+                    className="group/tag flex items-center bg-slate-700/40 backdrop-blur-sm border border-slate-500/30 hover:border-purple-400/50 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 transition-all duration-200 hover:shadow-lg"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      // Optional: Add navigation to tag profile
                     }}
                   >
-                    <div className="w-4 h-4 rounded-full overflow-hidden mr-1">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full overflow-hidden mr-1 sm:mr-2 border border-slate-400/30">
                       <Image
                         src={tag.profileImage || "/placeholder-avatar.png"}
                         alt={tag.username}
-                        width={16}
-                        height={16}
-                        className="object-cover"
+                        width={20}
+                        height={20}
+                        className="object-cover w-full h-full"
                       />
                     </div>
-                    <span className="text-xs text-gray-300">
-                      {tag.username}
+                    <span className="text-xs text-slate-300 group-hover/tag:text-purple-300 font-medium">
+                      @{tag.username}
                     </span>
                   </Link>
                 ))}
                 {tags.length > 3 && (
-                  <div className="text-xs text-gray-400 flex items-center">
-                    +{tags.length - 3} more
+                  <div className="flex items-center bg-slate-700/40 rounded-full px-2 sm:px-3 py-1 sm:py-1.5">
+                    <span className="text-xs text-slate-400 font-medium">
+                      +{tags.length - 3} more
+                    </span>
                   </div>
                 )}
               </div>
             )}
           </div>
 
-          {/* Stats Section */}
-          <div className="px-5 py-3 flex items-center justify-between border-t border-gray-800">
-            <div className="flex items-center space-x-4">
-              {/* Success Icon */}
-              <div className="flex items-center">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                    stroke="#B2F17E"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M8 12L11 15L16 10"
-                    stroke="#B2F17E"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span className="ml-1 text-xs text-[#C4C4C4]">
-                  {successCount}
-                </span>
-              </div>
-
-              {/* Failure Icon */}
-              <div className="flex items-center">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                    stroke="#FF6B6B"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M15 9L9 15"
-                    stroke="#FF6B6B"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M9 9L15 15"
-                    stroke="#FF6B6B"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span className="ml-1 text-xs text-[#C4C4C4]">
-                  {failureCount}
-                </span>
-              </div>
-
-              {/* Comment Icon */}
-              <div className="flex items-center">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z"
-                    stroke="#FFC600"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span className="ml-1 text-xs text-[#C4C4C4]">
-                  {commentCount}
-                </span>
-              </div>
-
-              {/* Reward indicator in stats if has rewards */}
-              {hasRewards && (
-                <div className="flex items-center">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 2L15.09 8.26L22 9L17 13.74L18.18 20.42L12 17.27L5.82 20.42L7 13.74L2 9L8.91 8.26L12 2Z"
-                      fill="#B2F17E"
-                    />
-                  </svg>
-                  <span className="ml-1 text-xs text-[#B2F17E] font-medium">
-                    {prizePool}₳
+          {/* Stats section */}
+          <div className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 border-t border-slate-600/30 bg-slate-800/40 backdrop-blur-sm">
+            <div className="flex items-center justify-between">
+              {/* This is the new, more flexible wrapper for the count badges */}
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Success count */}
+                <div className="flex items-center gap-1 bg-emerald-500/20 rounded-full px-2 py-1.5">
+                  <div className="w-4 h-4 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full flex items-center justify-center">
+                    <CheckCircle2 size={12} className="text-white" />
+                  </div>
+                  <span className="text-xs font-semibold text-emerald-400">
+                    {successCount}
                   </span>
                 </div>
-              )}
-            </div>
 
-            {/* Time Badge */}
-            <span className="text-xs text-[#C4C4C4]">{formattedDate}</span>
+                {/* Failure count */}
+                <div className="flex items-center gap-1 bg-red-500/20 rounded-full px-2 py-1.5">
+                  <div className="w-4 h-4 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                    <XCircle size={12} className="text-white" />
+                  </div>
+                  <span className="text-xs font-semibold text-red-400">
+                    {failureCount}
+                  </span>
+                </div>
+
+                {/* Comment count */}
+                <div className="flex items-center gap-1 bg-blue-500/20 rounded-full px-2 py-1.5">
+                  <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <MessageCircle size={12} className="text-white" />
+                  </div>
+                  <span className="text-xs font-semibold text-blue-400">
+                    {commentCount}
+                  </span>
+                </div>
+
+                {/* Reward indicator, hidden on small screens */}
+                {hasRewards && (
+                  <div className="hidden sm:flex items-center gap-1 bg-amber-500/20 rounded-full px-2 py-1.5">
+                    <div className="w-4 h-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center">
+                      <Star size={12} className="text-white" />
+                    </div>
+                    <span className="text-xs font-semibold text-amber-400">
+                      {prizePool}₳
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* This is the now-separate time badge */}
+              <div className="flex items-center gap-1.5 bg-slate-600/40 rounded-full px-2 sm:px-3 py-1.5 ml-2">
+                <Clock size={12} className="text-slate-400" />
+                <span className="text-xs text-slate-400 font-medium whitespace-nowrap">
+                  {formattedDate}
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* Creator Info */}
-          <div className="px-5 py-4 border-t border-gray-800 flex items-center">
-            <div
-              className="relative w-8 h-8 rounded-full overflow-hidden border-2"
-              style={{ borderColor: statusInfo.color }}
-            >
-              {creatorImage ? (
-                <Image
-                  src={creatorImage}
-                  alt={creatorName || "Creator"}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-                  <span className="text-white text-xs font-medium">
-                    {creatorName?.charAt(0).toUpperCase() || "?"}
-                  </span>
+          {/* Creator info */}
+          <div className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 border-t border-slate-600/30 bg-slate-800/60 backdrop-blur-sm rounded-b-3xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 ${statusInfo.borderColor} shadow-lg`}
+                  >
+                    {creatorImage ? (
+                      <Image
+                        src={creatorImage}
+                        alt={creatorName || "Creator"}
+                        width={40}
+                        height={40}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                        <User size={20} className="text-slate-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-slate-800"></div>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">
+                    {creatorName || "Anonymous"}
+                  </p>
+                  <p className="text-xs text-slate-400">Creator</p>
+                </div>
+              </div>
+
+              {/* Additional reward info for mobile */}
+              {hasRewards && (
+                <div className="text-right sm:hidden">
+                  <div className="text-sm font-bold text-emerald-400">
+                    {prizePool} ADA
+                  </div>
+                  <div className="text-xs text-slate-400">
+                    {maxWinners} winners
+                  </div>
                 </div>
               )}
             </div>
-            <div className="ml-3 flex-grow">
-              <p className="text-sm font-medium text-white">
-                {creatorName || "Anonymous"}
-              </p>
-            </div>
-
-            {/* Additional reward info in creator section for mobile */}
-            {hasRewards && (
-              <div className="text-right">
-                <div className="text-xs text-[#B2F17E] font-medium">
-                  {prizePool} ADA
-                </div>
-                <div className="text-xs text-gray-400">
-                  {maxWinners} winners
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

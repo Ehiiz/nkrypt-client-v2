@@ -1,6 +1,8 @@
+// _components/cards/kryptInfoCard.tsx
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Crown, Eye, Lock, Unlock } from "lucide-react";
 
 export default function KryptInfoCard({
   type,
@@ -22,100 +24,109 @@ export default function KryptInfoCard({
   tags?: { username: string; id: string; profileImage: string }[];
 }) {
   const router = useRouter();
+
   return (
-    <div className="bg-[#222227] rounded-lg p-5 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-gray-400 bg-[#2A2A30] px-3 py-1 rounded-full">
+    <div className="p-6 bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-xl mb-6">
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold text-white bg-slate-700/60 px-3 py-1 rounded-full border border-slate-600 uppercase tracking-wider">
             {type}
           </span>
           {draft && (
-            <span className="text-yellow-400 bg-yellow-400/20 px-3 py-1 rounded-full text-xs">
+            <span className="text-xs font-semibold text-amber-400 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/50">
               Draft
             </span>
           )}
           {isOwner && (
-            <span className="text-[#B2F17E] bg-[#B2F17E]/20 px-3 py-1 rounded-full text-xs">
-              Owner
-            </span>
+            <div className="flex items-center gap-1.5 bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/50 rounded-full px-3 py-1.5">
+              <div className="w-4 h-4 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full flex items-center justify-center">
+                <Crown size={12} className="text-white" />
+              </div>
+              <span className="text-xs font-semibold text-emerald-400">
+                Owner
+              </span>
+            </div>
           )}
         </div>
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-slate-400">
           Last updated: {new Date(updatedAt).toLocaleDateString()}
         </div>
       </div>
 
-      {/* Tags section - show first 3 tags */}
       {tags && tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           {tags.slice(0, 3).map((tag) => (
             <Link
               href={`/dashboard/profile/${tag.id}`}
               key={tag.id}
-              className="flex items-center bg-[#2A2A30] rounded-full px-2 py-1"
+              className="group flex items-center bg-slate-700/40 rounded-full px-3 py-1.5 transition-all hover:bg-slate-600"
               onClick={(e) => {
                 e.stopPropagation();
-                // Optional navigation to tag profile
               }}
             >
-              <div className="w-4 h-4 rounded-full overflow-hidden mr-1">
+              <div className="w-5 h-5 rounded-full overflow-hidden mr-2 border border-slate-500">
                 <Image
                   src={tag.profileImage || "/placeholder-avatar.png"}
                   alt={tag.username}
-                  width={16}
-                  height={16}
-                  className="object-cover"
+                  width={20}
+                  height={20}
+                  className="object-cover w-full h-full"
                 />
               </div>
-              <span className="text-xs text-gray-300">{tag.username}</span>
+              <span className="text-xs text-slate-300 group-hover:text-white">
+                {tag.username}
+              </span>
             </Link>
           ))}
           {tags.length > 3 && (
-            <div className="text-xs text-gray-400 flex items-center">
+            <div className="text-xs text-slate-400 flex items-center">
               +{tags.length - 3} more
             </div>
           )}
         </div>
       )}
 
+      {/* Button states */}
       {!hasAccess && (
-        <div className="bg-[#333339] p-4 rounded-md text-center my-6">
-          <p className="text-gray-300 mb-3">
-            You need to unlock this krypt to view its content
+        <div className="bg-slate-700/60 p-4 rounded-xl text-center my-6 border border-slate-600 shadow-inner">
+          <p className="text-slate-300 mb-3 text-sm">
+            You need to unlock this krypt to view its content.
           </p>
           <button
             onClick={() => router.push(`/dashboard/krypt/${id}/answer`)}
-            className="bg-[#6558C8] hover:bg-[#5649B9] transition-colors text-white px-6 py-2 rounded-md"
+            className="group relative overflow-hidden px-6 py-2.5 rounded-lg text-white font-semibold flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 mx-auto"
           >
+            <Lock size={18} />
             Unlock this krypt
           </button>
         </div>
       )}
 
       {isDekrypted && (
-        <div className="bg-[#B2F17E]/20 p-4 rounded-md text-center my-6">
-          <p className="text-[#B2F17E] mb-3">
+        <div className="bg-emerald-500/20 p-4 rounded-xl text-center my-6 border border-emerald-400/50 shadow-inner">
+          <p className="text-emerald-400 mb-3 text-sm">
             You have successfully unlocked this krypt!
           </p>
           <button
             onClick={() => router.push(`/dashboard/krypt/${id}/unlock`)}
-            className="bg-[#6558C8] hover:bg-[#5649B9] transition-colors text-white px-6 py-2 rounded-md"
+            className="group relative overflow-hidden px-6 py-2.5 rounded-lg text-white font-semibold flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 mx-auto"
           >
+            <Unlock size={18} />
             View Krypt
           </button>
         </div>
       )}
 
-      {/* Show View Krypt button when hasAccess is true but not isDekrypted */}
       {hasAccess && !isDekrypted && (
-        <div className="bg-[#333339] p-4 rounded-md text-center my-6">
-          <p className="text-gray-300 mb-3">
-            You have access to view this krypt&apos;s content
+        <div className="bg-slate-700/60 p-4 rounded-xl text-center my-6 border border-slate-600 shadow-inner">
+          <p className="text-slate-300 mb-3 text-sm">
+            You have access to view this krypt&apos;s content.
           </p>
           <button
             onClick={() => router.push(`/dashboard/krypt/${id}/unlock`)}
-            className="bg-[#6558C8] hover:bg-[#5649B9] transition-colors text-white px-6 py-2 rounded-md"
+            className="group relative overflow-hidden px-6 py-2.5 rounded-lg text-white font-semibold flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 mx-auto"
           >
+            <Eye size={18} />
             View Krypt
           </button>
         </div>

@@ -1,6 +1,7 @@
+// /auth/setup/page.tsx
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { Fragment } from "react"; // At the top with other imports
+import { Fragment } from "react";
 import Image from "next/image";
 import TextInput from "@/app/_components/inputs/textInput";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
@@ -13,7 +14,7 @@ import { UserAuthHook } from "@/app/_hooks/user/auth/auth.hook";
 import { useUserContext } from "@/app/_utils/context/userContext";
 import { UserTokenStorage } from "@/app/_utils/localStorage/userStorage";
 import { profileImagesSelection } from "@/app/constants";
-import { RiCircleLine } from "react-icons/ri";
+import { Loader2, CheckCircle, ArrowRight } from "lucide-react"; // Updated icons
 
 // Updated schema to require username of at least 3 characters
 const schema = yup.object({
@@ -74,7 +75,6 @@ export default function Page() {
         message: "Setup successful!",
         type: ToastType.success,
       });
-      // router.push("/dashboard");
     } else {
       toastAlert({
         message: response.message,
@@ -85,7 +85,6 @@ export default function Page() {
   };
 
   const checkValidUserName = async () => {
-    // Only check if username is at least 3 characters
     if (username && username.length >= 3) {
       setNameLoading(true);
       try {
@@ -103,7 +102,6 @@ export default function Page() {
         setNameLoading(false);
       }
     } else {
-      // Reset validation if username is too short
       setValidName(false);
     }
   };
@@ -112,7 +110,6 @@ export default function Page() {
     checkValidUserName();
   }, [username]);
 
-  // Update the profileImage form value when an image is selected
   useEffect(() => {
     if (selectedImage) {
       setValue("profileImage", selectedImage, { shouldValidate: true });
@@ -124,22 +121,28 @@ export default function Page() {
   };
 
   return (
-    <div className="w-full min-h-screen grid font-aeonik bg-[#2E3238]   justify-center items-center px-[20px] py-[54px]">
+    <div className="relative min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 font-aeonik text-white overflow-hidden">
+      {/* Animated background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-purple-400/5 to-pink-400/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-tr from-blue-400/5 to-cyan-400/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-70 flex justify-center items-center z-50">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4 shadow-lg">
-            <h2 className="text-xl font-semibold text-center text-gray-800">
+        <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-50 p-4">
+          <div className="relative bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl">
+            <h2 className="text-xl sm:text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
               Save your seed phrase
             </h2>
-            <p className="text-sm text-gray-600 text-center">
+            <p className="text-sm text-slate-400 text-center">
               This is your recovery phrase. Copy and store it securely. You
               won’t be able to see it again.
             </p>
-            <div className="bg-gray-100 p-4 rounded text-sm font-mono text-black whitespace-pre-wrap break-words max-h-40 overflow-y-auto">
+            <div className="bg-slate-700/60 p-4 rounded-xl text-sm font-mono text-slate-200 whitespace-pre-wrap break-words max-h-40 overflow-y-auto border border-slate-600">
               {seedPhrase}
             </div>
 
-            <div className="flex items-center justify-between mt-4 space-x-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(seedPhrase);
@@ -148,164 +151,151 @@ export default function Page() {
                     type: ToastType.success,
                   });
                 }}
-                className="bg-gray-800 text-white text-sm px-4 py-2 rounded hover:bg-gray-700 transition"
+                className="w-full sm:w-auto bg-slate-700 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:bg-slate-600 transition-colors shadow-lg"
               >
                 Copy
               </button>
 
               <button
                 onClick={() => router.push("/dashboard")}
-                className="bg-[#5744B7] text-white text-sm px-4 py-2 rounded hover:bg-[#463499] transition"
+                className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 flex items-center justify-center gap-2"
               >
-                Continue
+                Continue <ArrowRight size={18} />
               </button>
             </div>
           </div>
         </div>
       )}
 
-      <div className="w-full flex items-center justify-center">
-        <div className="max-w-[442px] w-full ">
-          <p className="font-[500] text-[40px] text-white mt-[60px]">
-            Complete Setup
-          </p>
+      <div className="relative z-10 w-full max-w-md p-8 bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-3xl shadow-2xl">
+        <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-8 text-center">
+          Complete Your Profile
+        </h2>
 
-          {/* Forms */}
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="mt-[15px] space-y-[20px] flex flex-col items-center mb-[20px] w-full"
-          >
-            {/* Image Selection Tray */}
-            <div className="w-full">
-              <label className="block text-white font-medium mb-2">
-                Choose Profile Picture
-              </label>
-              <div className="overflow-x-auto pb-2">
-                <div className="flex space-x-4 min-w-max">
-                  {profileImagesSelection.map((img, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleImageSelect(img)}
-                      className={`
-                        relative cursor-pointer rounded-full overflow-hidden
-                        border-2 transition-all duration-200 ease-in-out
-                        ${
-                          selectedImage === img
-                            ? "border-baseGreen-one scale-105"
-                            : "border-gray-200 hover:border-gray-300"
-                        }
-                      `}
-                    >
-                      <div className="w-16 h-16 relative">
-                        <Image
-                          src={img}
-                          alt={`Avatar ${index + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      {selectedImage === img && (
-                        <div className="absolute inset-0 bg-baseGreen-one bg-opacity-20 flex items-center justify-center">
-                          <svg
-                            className="w-6 h-6 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {errors.profileImage && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.profileImage.message}
-                </p>
-              )}
-            </div>
-
-            <TextInput
-              label="Username"
-              placeholder="Enter username (at least 3 characters)"
-              name="username"
-              register={register}
-              required
-              error={errors.username}
-            />
-            <div className="flex items-start -mt-4 w-full gap-[5px]">
-              {nameLoading && (
-                <RiCircleLine className="animate-spin h-[20px] bg-green-400 text-green-400" />
-              )}
-              {username && username.length >= 3 && (
-                <div className="text-sm">
-                  {validName ? (
-                    <p className="text-green-600">Username is available</p>
-                  ) : (
-                    <p className="text-red-600">Username is already taken</p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <TextInput
-              label="Bio"
-              placeholder="Tell us about yourself"
-              name="bio"
-              register={register}
-              textField={true}
-              required
-              error={errors.bio}
-            />
-
-            <button
-              type="submit"
-              disabled={!isValid || isLoading || !validName}
-              className={`
-                sm:max-w-[442px] w-full mt-[80px] min-h-[46px] rounded-[5px] text-white
-                ${
-                  !isValid || !validName
-                    ? "bg-[#5744B7]/50 cursor-not-allowed"
-                    : isLoading
-                    ? "bg-[#5744B7]/50 cursor-wait"
-                    : "bg-[#5744B7] hover:bg-[#5744B7]/90"
-                }
-                transition-colors duration-300 ease-in-out
-                flex items-center justify-center
-              `}
-            >
-              {isLoading ? (
-                <div className="flex items-center">
-                  <svg
-                    className="animate-spin h-5 w-5 mr-3"
-                    viewBox="0 0 24 24"
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 flex flex-col items-center mb-4 w-full"
+        >
+          <div className="w-full">
+            <label className="block text-slate-300 font-semibold mb-2">
+              Choose a Profile Picture
+            </label>
+            <div className="overflow-x-auto pb-4">
+              <div className="flex space-x-4 min-w-max">
+                {profileImagesSelection.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleImageSelect(img)}
+                    className={`
+                      relative cursor-pointer rounded-full overflow-hidden
+                      border-2 transition-all duration-200 ease-in-out
+                      ${
+                        selectedImage === img
+                          ? "border-purple-500 scale-105 shadow-md"
+                          : "border-slate-600 hover:border-purple-400"
+                      }
+                    `}
                   >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                </div>
-              ) : (
-                "Complete Setup"
-              )}
-            </button>
-          </form>
-        </div>
+                    <div className="w-16 h-16 relative">
+                      <Image
+                        src={img}
+                        alt={`Avatar ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    {selectedImage === img && (
+                      <div className="absolute inset-0 bg-purple-500 bg-opacity-20 flex items-center justify-center">
+                        <CheckCircle className="w-6 h-6 text-white" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            {errors.profileImage && (
+              <p className="mt-1 text-sm text-red-400">
+                {errors.profileImage.message}
+              </p>
+            )}
+          </div>
+
+          <TextInput
+            label="Username"
+            placeholder="Enter username (at least 3 characters)"
+            name="username"
+            register={register}
+            required
+            error={errors.username}
+          />
+          <div className="flex items-start -mt-4 w-full gap-2 text-sm">
+            {nameLoading ? (
+              <div className="flex items-center gap-2 text-slate-400">
+                <Loader2 className="animate-spin h-4 w-4" />
+                <span>Checking availability...</span>
+              </div>
+            ) : (
+              username &&
+              username.length >= 3 && (
+                <>
+                  {validName ? (
+                    <p className="text-green-400">Username is available</p>
+                  ) : (
+                    <p className="text-red-400">Username is already taken</p>
+                  )}
+                </>
+              )
+            )}
+          </div>
+
+          <TextInput
+            label="Bio"
+            placeholder="Tell us about yourself"
+            name="bio"
+            register={register}
+            textField={true}
+            required
+            error={errors.bio}
+          />
+
+          <button
+            type="submit"
+            disabled={!isValid || isLoading || !validName}
+            className={`
+              w-full min-h-[46px] rounded-lg text-white font-semibold flex items-center justify-center gap-2
+              ${
+                !isValid || !validName
+                  ? "bg-slate-700/60 cursor-not-allowed text-slate-400"
+                  : isLoading
+                  ? "bg-purple-600/60 cursor-wait"
+                  : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-purple-500/25"
+              }
+              transition-all duration-300 transform hover:scale-105
+            `}
+          >
+            {isLoading ? (
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            ) : (
+              <>
+                Complete Setup <ArrowRight size={18} />
+              </>
+            )}
+          </button>
+        </form>
       </div>
     </div>
   );

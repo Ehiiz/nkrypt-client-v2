@@ -1,3 +1,4 @@
+// _components/inputs/textInput.tsx
 "use client";
 import { useState } from "react";
 import {
@@ -7,6 +8,7 @@ import {
   UseFormRegister,
   RegisterOptions,
 } from "react-hook-form";
+import { Eye, EyeOff } from "lucide-react"; // Added new icons
 
 export type FlexibleRegisterOptions<T extends FieldValues> = Omit<
   RegisterOptions<T>,
@@ -43,33 +45,39 @@ export default function TextInput<T extends FieldValues>({
     name?.toLowerCase() === "password" ||
     name?.toLowerCase() === "confirmpassword";
 
-  const baseInputClasses =
-    "w-full text-white  placeholder:text-white/[80%] mt-[3px] outline-none";
-  const inputClasses = `text-white ${baseInputClasses} h-[52px] px-[20px] ${
-    readonly ? "cursor-not-allowed opacity-70" : ""
-  }`;
-  const textareaClasses = `py-4 ${baseInputClasses} ${
-    readonly ? "cursor-not-allowed opacity-70" : ""
-  }`;
+  const baseClasses =
+    "w-full bg-transparent outline-none transition-colors duration-200";
+  const inputClasses = `
+    ${baseClasses} h-12 text-white placeholder:text-slate-500
+    ${readonly ? "cursor-not-allowed opacity-70" : ""}
+  `;
+  const textareaClasses = `
+    ${baseClasses} py-3 text-white placeholder:text-slate-500
+    ${readonly ? "cursor-not-allowed opacity-70" : ""}
+  `;
 
   return (
-    <div className="w-full flex flex-col">
-      {textField ? (
-        <div className="flex items-center border-b-2 border-[#C4C4C4] gap-[10px]">
+    <div className="w-full flex flex-col group">
+      <div
+        className={`relative border-b-2 transition-colors duration-200 ${
+          error
+            ? "border-red-500"
+            : "border-slate-600 focus-within:border-purple-500"
+        }`}
+      >
+        {textField ? (
           <textarea
             id={name}
             {...register(name, {
               required: required ? `${label} is required` : false,
               ...validationRules,
             })}
-            rows={15}
-            className={textareaClasses}
+            rows={5}
+            className={`${textareaClasses} resize-none`}
             placeholder={placeholder}
             readOnly={readonly}
           />
-        </div>
-      ) : (
-        <div className="relative w-full border-b-2 border-[#C4C4C4]">
+        ) : (
           <input
             type={isPasswordField && !showPassword ? "password" : "text"}
             id={name}
@@ -81,26 +89,29 @@ export default function TextInput<T extends FieldValues>({
             placeholder={placeholder}
             readOnly={readonly}
           />
-          {isPasswordField && (
-            <button
-              type="button"
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-baseGreen-dark focus:outline-none"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-              {showPassword ? "Hide" : "Show"}
-            </button>
-          )}
-        </div>
-      )}
+        )}
+        {isPasswordField && (
+          <button
+            type="button"
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-white transition-colors"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        )}
+      </div>
       <label
         htmlFor={name}
-        className="text-baseBrown-four mt-[5px] text-[14px] font-[400]"
+        className={`text-sm mt-2 font-medium transition-colors duration-200 ${
+          error
+            ? "text-red-500"
+            : "text-slate-400 group-focus-within:text-purple-400"
+        }`}
       >
         {label}
       </label>
-      {error && (
-        <p className="text-red-500 text-[12px] mt-[5px]">{error.message}</p>
-      )}
+      {error && <p className="text-red-400 text-xs mt-1">{error.message}</p>}
     </div>
   );
 }
