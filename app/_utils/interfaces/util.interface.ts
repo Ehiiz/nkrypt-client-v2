@@ -53,6 +53,7 @@ export type KryptData = {
   maxWinners?: number | null; // Optional field for maximum winners
   prizePool?: number | null;
   backgroundMusic?: string;
+  isPublic?: boolean;
 };
 
 export interface YouTubeSong {

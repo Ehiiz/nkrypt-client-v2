@@ -6,7 +6,7 @@ import { useCommentsForKrypts } from "@/app/_hooks/user/krypt/useCommentsForKryp
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
 import { useState } from "react";
 import CommentCard from "../cards/commentCard";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react"; // Ensure Loader2 is imported from lucide-react
 
 export default function CommentsList({ id }: { id: string }) {
   const [commentText, setCommentText] = useState("");
@@ -63,11 +63,12 @@ export default function CommentsList({ id }: { id: string }) {
     <>
       {/* Comment Input */}
       <div className="flex items-start gap-3 mb-6">
+        {/* Placeholder for user's profile image - you might want to replace this with actual user data */}
         <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-slate-700/60 border border-slate-600" />
         <div className="flex-1">
           <textarea
             placeholder="Add a comment..."
-            className="w-full bg-slate-700/60 rounded-xl p-3 text-slate-200 outline-none focus:ring-1 focus:ring-purple-500 resize-none border border-slate-600 placeholder:text-slate-500"
+            className="w-full bg-slate-700/60 rounded-xl p-3 text-slate-200 outline-none focus:ring-1 focus:ring-purple-500 resize-none border border-slate-600 placeholder:text-slate-500 transition-colors" // Added transition-colors
             rows={3}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
@@ -82,7 +83,7 @@ export default function CommentsList({ id }: { id: string }) {
                     ? "bg-slate-700/60 cursor-not-allowed text-slate-400"
                     : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-purple-500/25"
                 }
-                transition-all duration-300
+                transition-all duration-300 transform hover:scale-105 // Added transform and hover:scale-105 for button animation
               `}
               onClick={handleCommentSubmit}
               disabled={!commentText.trim() || isSubmitting}

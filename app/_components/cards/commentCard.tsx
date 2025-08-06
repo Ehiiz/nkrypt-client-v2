@@ -6,7 +6,7 @@ export default function CommentCard(comment: IComment) {
     <div key={comment._id} className="flex gap-3">
       <Link
         href={`/dashboard/profile/${comment.commenterId}`}
-        className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0"
+        className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-slate-600" // Added border
       >
         <Image
           src={comment.commenterImage || "/placeholder-avatar.png"}
@@ -16,20 +16,25 @@ export default function CommentCard(comment: IComment) {
           className="object-cover"
         />
       </Link>
-      <div className="flex-1 bg-[#2A2A30] p-3 rounded-lg">
+      <div className="flex-1 bg-slate-700/60 p-3 rounded-lg shadow-md border border-slate-600">
+        {" "}
+        {/* Updated background, added shadow and border */}
         <div className="flex justify-between items-center mb-1">
           <Link
             href={`/dashboard/profile/${comment.commenterId}`}
-            className="text-[#B2F17E] text-sm font-medium"
+            className="text-purple-400 text-sm font-medium hover:underline" // Changed color to purple-400 and added hover
           >
             {comment.commenterName}
           </Link>
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-slate-400">
+            {" "}
+            {/* Updated text color */}
             {new Date(comment.createdAt).toLocaleTimeString()}{" "}
             {new Date(comment.createdAt).toLocaleDateString()}
           </span>
         </div>
-        <p className="text-gray-200 text-sm">{comment?.comment}</p>
+        <p className="text-slate-200 text-sm">{comment?.comment}</p>{" "}
+        {/* Updated text color */}
       </div>
     </div>
   );

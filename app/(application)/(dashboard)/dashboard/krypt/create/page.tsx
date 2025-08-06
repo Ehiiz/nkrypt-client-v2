@@ -1,4 +1,3 @@
-// app/dashboard/krypt/create/page.tsx
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -24,6 +23,8 @@ import {
   Wallet,
   Loader2,
   Link as LinkIcon,
+  Globe, // Added Globe icon for public
+  EyeOff, // Added EyeOff icon for private
 } from "lucide-react";
 import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import { KryptTypeEnum } from "@/app/_hooks/user/krypt/krypt.interface";
@@ -59,6 +60,7 @@ const CreateKryptForm = () => {
     maxWinners: null,
     prizePool: null,
     backgroundMusic: undefined,
+    isPublic: true, // New field: true by default for public
   });
 
   useEffect(() => {
@@ -105,6 +107,14 @@ const CreateKryptForm = () => {
       ...kryptData,
       [name]: value,
     });
+  };
+
+  // New handler for the public toggle
+  const handlePublicToggleChange = () => {
+    setKryptData((prev) => ({
+      ...prev,
+      isPublic: !prev.isPublic,
+    }));
   };
 
   const handleRewardInfoChange = async (
@@ -168,8 +178,11 @@ const CreateKryptForm = () => {
 
   const handleUnsplashImageSelect = (image: UnsplashImage): void => {
     handleContentValueChange(image.urls.regular);
+
     setShowUnsplashResults(false);
+
     setUnsplashSearchQuery("");
+
     setUnsplashResults([]);
   };
 
@@ -183,6 +196,7 @@ const CreateKryptForm = () => {
     if (!query.trim()) return;
     setIsSearching(true);
     try {
+      // NOTE: Replace with your actual YouTube Data API Key
       const API_KEY = "AIzaSyATw_J0rBSzyJeIh77skZ7GEwJpfixQURc";
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(
@@ -383,7 +397,7 @@ const CreateKryptForm = () => {
     }
 
     try {
-      const data = await UserKryptService.createKrypt(submissionData);
+      const data = await UserKryptService.createKrypt(submissionData); // isPublic is included here
       if (data.success) {
         toastAlert({
           type: ToastType.success,
@@ -412,7 +426,7 @@ const CreateKryptForm = () => {
       const data = await UserKryptService.createKrypt({
         ...kryptData,
         draft: true,
-      });
+      }); // isPublic is included here
       if (data.success) {
         toastAlert({
           type: ToastType.success,
@@ -490,6 +504,50 @@ const CreateKryptForm = () => {
           className="mb-4"
         />
       </div>
+
+      {/* Public/Private Toggle */}
+      <div className="mb-6 bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-xl p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {kryptData.isPublic ? (
+            <Globe className="text-green-400" size={24} />
+          ) : (
+            <EyeOff className="text-red-400" size={24} />
+          )}
+          <div>
+            <label
+              htmlFor="public-toggle"
+              className="font-semibold text-white cursor-pointer"
+            >
+              {kryptData.isPublic ? "Public Krypt" : "Private Krypt"}
+            </label>
+            <p className="text-sm text-slate-400">
+              {kryptData.isPublic
+                ? "Visible to everyone on the timeline."
+                : "Only visible to tagged users."}
+            </p>
+          </div>
+        </div>
+        <div
+          className={`relative w-14 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${
+            kryptData.isPublic ? "bg-purple-600" : "bg-slate-600"
+          }`}
+          onClick={handlePublicToggleChange}
+        >
+          <input
+            type="checkbox"
+            id="public-toggle"
+            className="sr-only" // Visually hide the checkbox but keep it accessible
+            checked={kryptData.isPublic}
+            onChange={handlePublicToggleChange} // This handles the actual state change
+          />
+          <div
+            className={`w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+              kryptData.isPublic ? "translate-x-6" : "translate-x-0"
+            }`}
+          ></div>
+        </div>
+      </div>
+
       <div className="flex justify-end">
         <button
           type="button"
@@ -1386,4 +1444,5 @@ const CreateKryptForm = () => {
     </div>
   );
 };
+
 export default authUserWrapper(CreateKryptForm);
