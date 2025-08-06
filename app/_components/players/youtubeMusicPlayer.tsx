@@ -68,7 +68,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   // Always mute autoplay videos for better UX (Chrome policy)
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=${
     autoplay ? 1 : 0
-  }&mute=${autoplay || isMuted ? 1 : 0}&controls=1&rel=0&modestbranding=1`;
+  }&controls=1&rel=0&modestbranding=1`;
 
   return (
     <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl shadow-lg">
