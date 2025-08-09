@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 export default function Home() {
   useEffect(() => {
-    redirect("/auth/onboarding");
+    redirect("/dashboard");
   }, []);
 
   return <div></div>;
