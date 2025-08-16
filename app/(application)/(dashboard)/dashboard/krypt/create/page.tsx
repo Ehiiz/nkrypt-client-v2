@@ -23,8 +23,8 @@ import {
   Wallet,
   Loader2,
   Link as LinkIcon,
-  Globe, // Added Globe icon for public
-  EyeOff, // Added EyeOff icon for private
+  Globe,
+  EyeOff,
 } from "lucide-react";
 import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import { KryptTypeEnum } from "@/app/_hooks/user/krypt/krypt.interface";
@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 import { UserTagInput } from "@/app/_components/cards/userTags";
 import NextImage from "next/image";
+import Link from "next/link";
 import {
   ContentItem,
   KryptData,
@@ -60,7 +61,7 @@ const CreateKryptForm = () => {
     maxWinners: null,
     prizePool: null,
     backgroundMusic: undefined,
-    isPublic: true, // New field: true by default for public
+    isPublic: true,
   });
 
   useEffect(() => {
@@ -109,7 +110,6 @@ const CreateKryptForm = () => {
     });
   };
 
-  // New handler for the public toggle
   const handlePublicToggleChange = () => {
     setKryptData((prev) => ({
       ...prev,
@@ -178,11 +178,8 @@ const CreateKryptForm = () => {
 
   const handleUnsplashImageSelect = (image: UnsplashImage): void => {
     handleContentValueChange(image.urls.regular);
-
     setShowUnsplashResults(false);
-
     setUnsplashSearchQuery("");
-
     setUnsplashResults([]);
   };
 
@@ -196,7 +193,6 @@ const CreateKryptForm = () => {
     if (!query.trim()) return;
     setIsSearching(true);
     try {
-      // NOTE: Replace with your actual YouTube Data API Key
       const API_KEY = "AIzaSyATw_J0rBSzyJeIh77skZ7GEwJpfixQURc";
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(
@@ -256,7 +252,7 @@ const CreateKryptForm = () => {
     setBackgroundMusic(null);
   };
 
-  const handleTagsChange = useCallback((tags: string[]) => {
+  const handleTagsChange = useCallback((tags: any[]) => {
     setKryptData((prev) => ({
       ...prev,
       tags,
@@ -397,7 +393,7 @@ const CreateKryptForm = () => {
     }
 
     try {
-      const data = await UserKryptService.createKrypt(submissionData); // isPublic is included here
+      const data = await UserKryptService.createKrypt(submissionData);
       if (data.success) {
         toastAlert({
           type: ToastType.success,
@@ -426,7 +422,7 @@ const CreateKryptForm = () => {
       const data = await UserKryptService.createKrypt({
         ...kryptData,
         draft: true,
-      }); // isPublic is included here
+      });
       if (data.success) {
         toastAlert({
           type: ToastType.success,
@@ -505,7 +501,6 @@ const CreateKryptForm = () => {
         />
       </div>
 
-      {/* Public/Private Toggle */}
       <div className="mb-6 bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {kryptData.isPublic ? (
@@ -536,9 +531,9 @@ const CreateKryptForm = () => {
           <input
             type="checkbox"
             id="public-toggle"
-            className="sr-only" // Visually hide the checkbox but keep it accessible
+            className="sr-only"
             checked={kryptData.isPublic}
-            onChange={handlePublicToggleChange} // This handles the actual state change
+            onChange={handlePublicToggleChange}
           />
           <div
             className={`w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
@@ -768,7 +763,6 @@ const CreateKryptForm = () => {
           )}
         </div>
 
-        {/* Background Music Section */}
         <div className="mb-8 p-6 bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-xl">
           <h3 className="text-xl font-semibold mb-4 text-white flex items-center">
             <Music className="mr-2 text-purple-400" />
@@ -849,7 +843,7 @@ const CreateKryptForm = () => {
                 <div className="flex space-x-2">
                   <input
                     type="url"
-                    placeholder="https://www.youtube.com/embed5..."
+                    placeholder="https://www.youtube.com/embed/..."
                     className="flex-1 bg-slate-700/60 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === "Enter") {
@@ -1309,44 +1303,223 @@ const CreateKryptForm = () => {
           <ArrowLeft className="mr-2" />
           Back
         </button>
-        <div className="flex space-x-3">
+        <button
+          type="button"
+          onClick={() => setStep(5)}
+          disabled={!canSubmitForm}
+          className={`group relative overflow-hidden px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg
+              ${
+                canSubmitForm
+                  ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 hover:shadow-purple-500/25"
+                  : "bg-slate-700 text-slate-400 cursor-not-allowed"
+              }`}
+        >
+          Preview Krypt <ArrowRight className="ml-2" />
+        </button>
+      </div>
+    </div>
+  );
+
+  const PreviewYouTubePlayer = ({
+    url,
+    title,
+  }: {
+    url: string;
+    title: string;
+  }) => (
+    <div className="p-4 bg-slate-900/70 rounded-lg border border-slate-700">
+      <p className="text-sm font-semibold text-white mb-2">{title}</p>
+      <div className="flex items-center space-x-3">
+        <Youtube size={24} className="text-red-500" />
+        <span className="text-purple-400 text-xs break-all">{url}</span>
+      </div>
+      <p className="text-xs text-slate-400 mt-2">
+        (YouTube Player will be shown here)
+      </p>
+    </div>
+  );
+
+  const renderStepFive = () => {
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    return (
+      <div className="transition-all">
+        <h2 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+          Preview
+        </h2>
+        <div className="bg-slate-800/50 rounded-xl p-4 sm:p-6 border border-slate-700 max-w-3xl mx-auto w-full mb-8">
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500">
+              <NextImage
+                src={"/placeholder-avatar.png"}
+                alt="Your avatar"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <p className="font-bold text-lg text-white">Your Name</p>
+              <p className="text-xs text-slate-400">
+                Published on {currentDate}
+              </p>
+            </div>
+            <div
+              className={`ml-auto px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${
+                kryptData.isPublic
+                  ? "bg-green-500/20 text-green-300"
+                  : "bg-red-500/20 text-red-300"
+              }`}
+            >
+              {kryptData.isPublic ? <Globe size={14} /> : <EyeOff size={14} />}
+              {kryptData.isPublic ? "Public" : "Private"}
+            </div>
+          </div>
+          <div className="mb-6 p-6 bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-xl">
+            <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2">
+              {kryptData.title}
+            </h1>
+            <p style={{ whiteSpace: "pre-wrap" }} className="text-slate-300">
+              {kryptData.description}
+            </p>
+            {kryptData.tags && kryptData.tags.length > 0 && (
+              <div className="flex flex-wrap mt-4 gap-2 mb-3">
+                {kryptData.tags.map((tag: any) => (
+                  <div
+                    key={tag.id}
+                    className="group flex items-center bg-slate-700/40 rounded-full px-3 py-1"
+                  >
+                    <div className="w-5 h-5 rounded-full overflow-hidden mr-2 border border-slate-500">
+                      <NextImage
+                        src={tag.profileImage || "/placeholder-avatar.png"}
+                        alt={tag.username}
+                        width={20}
+                        height={20}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <span className="text-xs text-slate-300">
+                      {tag.username}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 mb-6 shadow-xl">
+            {kryptData.content.map((item, index) => (
+              <div key={index} className="mb-4">
+                {item.type === "text" && (
+                  <p
+                    style={{ whiteSpace: "pre-wrap" }}
+                    className="text-slate-200 whitespace-pre-wrap leading-relaxed"
+                  >
+                    {item.content}
+                  </p>
+                )}
+                {item.type === "image" && (
+                  <div className="my-4 rounded-lg overflow-hidden border border-slate-600 shadow-md">
+                    <div
+                      className="relative w-full"
+                      style={{ paddingTop: "56.25%" }}
+                    >
+                      {" "}
+                      {/* 16:9 Aspect Ratio */}
+                      <NextImage
+                        src={item.content}
+                        alt="Krypt content preview"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+            {backgroundMusic && (
+              <div className="mt-6">
+                <PreviewYouTubePlayer
+                  url={backgroundMusic.url!}
+                  title={backgroundMusic.title}
+                />
+              </div>
+            )}
+          </div>
+          <div className="mt-6 flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+            <div className="flex space-x-4 text-center">
+              <div>
+                <p className="font-bold text-lg">0</p>
+                <p className="text-xs text-slate-400">Comments</p>
+              </div>
+              <div>
+                <p className="font-bold text-lg">0</p>
+                <p className="text-xs text-slate-400">Successes</p>
+              </div>
+              <div>
+                <p className="font-bold text-lg">0</p>
+                <p className="text-xs text-slate-400">Failures</p>
+              </div>
+            </div>
+            <button
+              disabled
+              className="px-4 py-2 bg-slate-700 text-slate-400 rounded-lg font-semibold cursor-not-allowed"
+            >
+              Share
+            </button>
+          </div>
+        </div>
+        <div className="flex justify-between">
           <button
             type="button"
-            onClick={handleSaveAsDraft}
-            disabled={isSubmitting}
-            className={`flex items-center px-6 py-3 rounded-lg text-white font-semibold transition-colors shadow-md ${
-              isSubmitting
-                ? "bg-slate-700/60 text-slate-400 cursor-not-allowed"
-                : "bg-slate-600 hover:bg-slate-500"
-            }`}
+            onClick={() => setStep(4)}
+            className="flex items-center px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors font-semibold"
           >
-            <Save className="mr-2" />
-            {isSubmitting ? "Saving..." : "Save as Draft"}
+            <ArrowLeft className="mr-2" />
+            Back
           </button>
-          <button
-            type="submit"
-            disabled={!canSubmitForm || isSubmitting}
-            className={`group relative overflow-hidden px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg
+          <div className="flex space-x-3">
+            <button
+              type="button"
+              onClick={handleSaveAsDraft}
+              disabled={isSubmitting}
+              className={`flex items-center px-6 py-3 rounded-lg text-white font-semibold transition-colors shadow-md ${
+                isSubmitting
+                  ? "bg-slate-700/60 text-slate-400 cursor-not-allowed"
+                  : "bg-slate-600 hover:bg-slate-500"
+              }`}
+            >
+              <Save className="mr-2" />
+              {isSubmitting ? "Saving..." : "Save as Draft"}
+            </button>
+            <button
+              type="submit"
+              disabled={!canSubmitForm || isSubmitting}
+              className={`group relative overflow-hidden px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg
               ${
                 canSubmitForm && !isSubmitting
                   ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 hover:shadow-purple-500/25"
                   : "bg-slate-700 text-slate-400 cursor-not-allowed"
               }`}
-          >
-            {isSubmitting ? (
-              <Loader2 size={20} className="animate-spin" />
-            ) : (
-              "Create Krypt"
-            )}
-          </button>
+            >
+              {isSubmitting ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : (
+                "Create Krypt"
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="w-full min-h-screen lg:min-h-0 flex flex-col mx-auto p-4 sm:p-8 bg-slate-900/80 backdrop-blur-sm rounded-xl shadow-2xl text-white">
-      <div className="flex items-center justify-between mb-8 text-xs sm:text-sm max-w-2xl mx-auto w-full">
+      <div className="flex items-center justify-between mb-8 text-xs sm:text-sm max-w-3xl mx-auto w-full">
+        {/* Step 1 */}
         <div
           className={`flex flex-col items-center relative z-10 ${
             step >= 1 ? "text-purple-400" : "text-slate-400"
@@ -1370,6 +1543,7 @@ const CreateKryptForm = () => {
             step >= 2 ? "bg-purple-500" : "bg-slate-700"
           }`}
         ></div>
+        {/* Step 2 */}
         <div
           className={`flex flex-col items-center relative z-10 ${
             step >= 2 ? "text-purple-400" : "text-slate-400"
@@ -1393,6 +1567,7 @@ const CreateKryptForm = () => {
             step >= 3 ? "bg-purple-500" : "bg-slate-700"
           }`}
         ></div>
+        {/* Step 3 */}
         <div
           className={`flex flex-col items-center relative z-10 ${
             step >= 3 ? "text-purple-400" : "text-slate-400"
@@ -1416,6 +1591,7 @@ const CreateKryptForm = () => {
             step >= 4 ? "bg-purple-500" : "bg-slate-700"
           }`}
         ></div>
+        {/* Step 4 */}
         <div
           className={`flex flex-col items-center relative z-10 ${
             step >= 4 ? "text-purple-400" : "text-slate-400"
@@ -1434,12 +1610,37 @@ const CreateKryptForm = () => {
           <span className="sm:inline hidden">Security</span>
           <span className="sm:hidden">Lock</span>
         </div>
+        <div
+          className={`h-1 flex-1 mx-1 transition-colors duration-300 ${
+            step >= 5 ? "bg-purple-500" : "bg-slate-700"
+          }`}
+        ></div>
+        {/* Step 5 */}
+        <div
+          className={`flex flex-col items-center relative z-10 ${
+            step >= 5 ? "text-purple-400" : "text-slate-400"
+          }`}
+        >
+          <div
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mb-2 font-bold transition-all duration-300
+              ${
+                step >= 5
+                  ? "bg-purple-600 text-white ring-2 ring-purple-400"
+                  : "bg-slate-700 text-slate-400 ring-1 ring-slate-600"
+              }`}
+          >
+            5
+          </div>
+          <span className="sm:inline hidden">Preview</span>
+          <span className="sm:hidden">Preview</span>
+        </div>
       </div>
       <form onSubmit={handleSubmit} className="mt-8 flex-1">
         {step === 1 && renderStepOne()}
         {step === 2 && renderStepTwo()}
         {step === 3 && renderStepThree()}
         {step === 4 && renderStepFour()}
+        {step === 5 && renderStepFive()}
       </form>
     </div>
   );
