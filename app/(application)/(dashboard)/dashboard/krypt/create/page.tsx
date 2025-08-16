@@ -43,6 +43,7 @@ import {
   YouTubeSong,
 } from "@/app/_utils/interfaces/util.interface";
 import { UnsplashSearch } from "@/app/_components/inputs/unsplashsearch";
+import YouTubePlayer from "@/app/_components/players/youtubeMusicPlayer";
 
 const CreateKryptForm = () => {
   const router = useRouter();
@@ -1441,7 +1442,7 @@ const CreateKryptForm = () => {
             ))}
             {backgroundMusic && (
               <div className="mt-6">
-                <PreviewYouTubePlayer
+                <YouTubePlayer
                   url={backgroundMusic.url!}
                   title={backgroundMusic.title}
                 />
