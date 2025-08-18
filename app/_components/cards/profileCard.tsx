@@ -227,7 +227,7 @@ export default function ProfileCard({
                       Total Balance
                     </p>
                     <p className="text-emerald-400 font-bold text-lg">
-                      {balance}
+                      {balance.replace("ADA", "tADA")}
                     </p>
                   </div>
                 </div>
