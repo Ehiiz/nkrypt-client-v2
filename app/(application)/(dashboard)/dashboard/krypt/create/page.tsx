@@ -149,7 +149,7 @@ const CreateKryptForm = () => {
       const response = await fetch(
         `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
           query
-        )}&per_page=12&client_id=mGV-9Jych6qEGaBGcvj7F_5wnVc8NHuswNSWmFyDcCA`,
+        )}&per_page=12&client_id=${process.env.NEXT_PUBLIC_UNSPLASH_CLIENT_ID}`,
         {
           method: "GET",
           headers: { Accept: "application/json" },
