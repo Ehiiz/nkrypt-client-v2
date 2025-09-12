@@ -1,26 +1,55 @@
-// krypt/[id]/answer/page.tsx
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useUserContext } from "@/app/_utils/context/userContext";
 import { useKryptQuestions } from "@/app/_hooks/user/krypt/useKryptQuestions";
+import { HelpCircle, Loader2, Lock, Unlock, Zap } from "lucide-react";
 import { KryptTypeEnum } from "@/app/_hooks/user/krypt/krypt.interface";
-import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import { toastAlert, ToastType } from "@/app/_utils/notifications/toast";
-import authUserWrapper from "@/app/_utils/middlewares/userAuth";
-import { Loader2, Lock, Unlock, Zap, HelpCircle } from "lucide-react";
+import { UserKryptService } from "@/app/_hooks/user/krypt/krypt.hook";
 import SubHeader from "@/app/_components/headers/subHeader";
 
 const KryptAnswerPage = () => {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
+  const { user } = useUserContext();
+
   const { questionData, questionLoading, error } = useKryptQuestions({
     id: id,
   });
   const [answers, setAnswers] = useState<string[]>([]);
   const [passcodeValue, setPasscodeValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check if user is logged in
+  if (!user) {
+    return (
+      <div className="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="fixed inset-0 flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-sm z-50">
+          <div className="text-center p-8 bg-slate-800/80 border border-slate-700/50 rounded-2xl shadow-xl max-w-sm w-full">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg mb-4 mx-auto">
+              <Lock size={36} className="text-white" />
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-slate-300 mb-2">
+              Authentication Required
+            </h3>
+            <p className="text-sm text-slate-400 mb-6">
+              You must be logged in to answer this krypt.
+            </p>
+            <button
+              onClick={() => router.push("/login")}
+              className="group relative overflow-hidden bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+              <span className="relative z-10">Log In to Continue</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Handle loading and error states
   if (questionLoading) {
@@ -141,7 +170,7 @@ const KryptAnswerPage = () => {
 
       case KryptTypeEnum.QUIZ:
         return questions.map((question) => (
-          <div key={question._id} className="mb-6">
+          <div key={question.index} className="mb-6">
             <label className="block mb-2 font-medium text-slate-300">
               Question {question.index + 1}: {question.question}
             </label>
@@ -159,7 +188,7 @@ const KryptAnswerPage = () => {
 
       case KryptTypeEnum.MULTPLE_CHOICE:
         return questions.map((question) => (
-          <div key={question._id} className="mb-6">
+          <div key={question.index} className="mb-6">
             <label className="block mb-2 font-medium text-slate-300">
               Question {question.index + 1}: {question.question}
             </label>
@@ -252,4 +281,4 @@ const KryptAnswerPage = () => {
   );
 };
 
-export default authUserWrapper(KryptAnswerPage);
+export default KryptAnswerPage;

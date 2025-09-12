@@ -179,4 +179,4 @@ function KryptUnlockPage() {
   );
 }
 
-export default authUserWrapper(KryptUnlockPage);
+export default KryptUnlockPage;

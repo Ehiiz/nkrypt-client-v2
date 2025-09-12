@@ -24,6 +24,7 @@ export const useKrypts = (page = 1, search = "") => {
 
   return {
     krypts,
+
     pagination,
     error,
     kryptsLoading,

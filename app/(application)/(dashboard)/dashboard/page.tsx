@@ -1,18 +1,45 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import {
+  Hash,
+  Zap,
+  TrendingUp,
+  Search,
+  Filter,
+  Loader2,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { useKrypts } from "@/app/_hooks/user/krypt/useKrypts";
-import authUserWrapper from "@/app/_utils/middlewares/userAuth";
-import { Hash, Zap, TrendingUp, Search, Filter } from "lucide-react";
 import { KryptCard } from "@/app/_components/cards/kryptCard";
 
 function Dashboard() {
-  const { krypts, kryptsLoading } = useKrypts();
+  const [page, setPage] = useState(1);
+  const { krypts, kryptsLoading, pagination } = useKrypts(page);
+
+  const [loadingPrevious, setLoadingPrevious] = useState(false);
+
+  const isFetchingMore = kryptsLoading && !loadingPrevious;
+
+  const handleLoadMore = () => {
+    if (page < pagination.totalPages) {
+      setPage((prevPage) => prevPage + 1);
+      setLoadingPrevious(false);
+    }
+  };
+
+  const handleLoadPrevious = () => {
+    if (page > 1) {
+      setPage((prevPage) => prevPage - 1);
+      setLoadingPrevious(true);
+    }
+  };
 
   if (kryptsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        {/* Header */}
         <header className="relative overflow-hidden bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 shadow-xl">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-pink-600/5"></div>
           <div className="relative flex flex-col sm:flex-row justify-between items-center p-4 sm:p-6 text-center sm:text-left">
@@ -30,7 +57,6 @@ function Dashboard() {
           </div>
         </header>
 
-        {/* Loading State */}
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-slate-400 p-4">
           <div className="relative mb-8">
             <div className="w-20 h-20 border-4 border-slate-600 border-t-purple-500 rounded-full animate-spin"></div>
@@ -51,18 +77,15 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-purple-400/5 to-pink-400/5 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-tr from-blue-400/5 to-cyan-400/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-400/3 to-pink-400/3 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
-      {/* Header */}
       <header className="relative overflow-hidden bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 shadow-xl sticky top-0 z-50">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-pink-600/5"></div>
         <div className="relative">
-          {/* Top bar */}
           <div className="flex flex-col sm:flex-row justify-between items-center p-4 sm:p-6 border-b border-slate-700/30 text-center sm:text-left">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -82,7 +105,6 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Stats bar */}
           <div className="px-4 sm:px-6 py-3 sm:py-4 bg-slate-800/40 backdrop-blur-sm">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex flex-wrap justify-center sm:justify-start items-center gap-4 sm:gap-6 w-full sm:w-auto">
@@ -92,7 +114,7 @@ function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white">
-                      {krypts?.length || 0}
+                      {pagination?.total || 0}
                     </p>
                     <p className="text-xs text-slate-400">Total Krypts</p>
                   </div>
@@ -117,7 +139,6 @@ function Dashboard() {
                 </div>
               </div>
 
-              {/* Action buttons */}
               <div className="flex items-center gap-2 sm:gap-3 mt-4 sm:mt-0 w-full sm:w-auto justify-center sm:justify-end">
                 <button className="group relative overflow-hidden bg-slate-700/60 hover:bg-slate-600/60 border border-slate-500/30 hover:border-purple-400/50 rounded-xl px-3 sm:px-4 py-2 transition-all duration-300 flex-1 sm:flex-none">
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
@@ -149,10 +170,30 @@ function Dashboard() {
         </div>
       </header>
 
-      {/* Main content */}
       <main className="relative z-10">
         {krypts && krypts.length > 0 ? (
           <div className="container mx-auto px-4 py-6 sm:py-8">
+            {page > 1 && (
+              <div className="flex justify-center mb-6">
+                <button
+                  onClick={handleLoadPrevious}
+                  disabled={kryptsLoading}
+                  className="group relative overflow-hidden bg-slate-700/60 hover:bg-slate-600/60 border border-slate-500/30 hover:border-purple-400/50 rounded-full px-5 py-2 transition-all duration-300 flex items-center gap-2 font-semibold text-sm text-slate-300 hover:text-white"
+                >
+                  {kryptsLoading && loadingPrevious ? (
+                    <Loader2 className="animate-spin h-4 w-4" />
+                  ) : (
+                    <ChevronUp className="h-4 w-4" />
+                  )}
+                  <span>
+                    {kryptsLoading && loadingPrevious
+                      ? "Loading..."
+                      : "Load Previous"}
+                  </span>
+                </button>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {krypts.map((krypt, i) => (
                 <div
@@ -163,9 +204,31 @@ function Dashboard() {
                 </div>
               ))}
             </div>
+
+            {page < pagination.totalPages && (
+              <div className="flex justify-center mt-6">
+                <button
+                  onClick={handleLoadMore}
+                  disabled={kryptsLoading}
+                  className="group relative overflow-hidden bg-slate-700/60 hover:bg-slate-600/60 border border-slate-500/30 hover:border-purple-400/50 rounded-full px-5 py-2 transition-all duration-300 flex items-center gap-2 font-semibold text-sm text-slate-300 hover:text-white"
+                >
+                  <span>{isFetchingMore ? "Loading..." : "Load More"}</span>
+                  {isFetchingMore ? (
+                    <Loader2 className="animate-spin h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            )}
+
+            {page >= pagination.totalPages && (
+              <div className="text-center text-slate-400 py-8">
+                <p>You&apos;ve reached the end of the list!</p>
+              </div>
+            )}
           </div>
         ) : (
-          /* Empty state */
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-slate-400 px-6 text-center">
             <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-slate-700 to-slate-600 rounded-3xl flex items-center justify-center mb-6 shadow-xl">
               <Hash size={40} className="text-slate-500" />
@@ -191,4 +254,4 @@ function Dashboard() {
   );
 }
 
-export default authUserWrapper(Dashboard);
+export default Dashboard;

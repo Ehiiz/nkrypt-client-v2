@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useKryptDetials } from "@/app/_hooks/user/krypt/useKryptDetails";
-import authUserWrapper from "@/app/_utils/middlewares/userAuth";
+//import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 import StatsAndActionCard from "@/app/_components/cards/statsAndActionCard";
 import CommentsList from "@/app/_components/lists/commentsList";
 import ShareCard from "@/app/_components/cards/shareCard";
@@ -114,4 +114,4 @@ function KryptDetailsPage() {
   );
 }
 
-export default authUserWrapper(KryptDetailsPage);
+export default KryptDetailsPage;
