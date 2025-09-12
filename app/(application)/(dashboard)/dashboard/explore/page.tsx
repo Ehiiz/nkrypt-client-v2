@@ -4,7 +4,6 @@ import { useState } from "react";
 import { KryptCard } from "@/app/_components/cards/kryptCard";
 import Loader from "@/app/_components/loaders/loader";
 import { useKrypts } from "@/app/_hooks/user/krypt/useKrypts";
-import authUserWrapper from "@/app/_utils/middlewares/userAuth";
 import { motion } from "framer-motion";
 import { Search, X, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -144,4 +143,4 @@ function Explore() {
   );
 }
 
-export default authUserWrapper(Explore);
+export default Explore;
